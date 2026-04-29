@@ -3,183 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Casa 🏠 - Family Notes</title>
+    <title>Casa 🏠 - Calendario</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #F5F4F0;
-            --card: #FFFFFF;
-            --primary: #1C1C2E;
-            --accent: #FF4757;
-            --text: #1C1C2E;
-            --muted: #9A9A9A;
-            --border: #EBEBEB;
-            --cat-super: #FF4757; --cat-casa: #2ED573; --cat-comida: #FF6B81;
-            --cat-colegio: #5352ED; --cat-medico: #1E90FF; --cat-pagos: #FFA502;
-            --cat-mascota: #A29BFE; --cat-trabajo: #636E72; --cat-eventos: #FDCB6E;
-            --cat-urgente: #FF2D55; --cat-panoramas: #00CEC9;
+            --bg: #F5F4F0; --card: #FFFFFF; --primary: #1C1C2E; --accent: #FF4757;
+            --text: #1C1C2E; --muted: #9A9A9A; --border: #EBEBEB;
             --u-mati: #4A90E2; --u-lis: #E84393; --u-agus: #9B59B6; --u-mia: #2ECC71;
-            --radius: 18px;
-            --shadow: 0 4px 20px rgba(0,0,0,0.07);
+            --radius: 18px; --shadow: 0 4px 20px rgba(0,0,0,0.07);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overscroll-behavior: none; }
 
-        /* ACCESS DENIED */
-        #access-denied { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; gap: 10px; background: var(--primary); }
-        #access-denied h2 { font-size: 2rem; color: white; }
-        #access-denied p { color: rgba(255,255,255,0.6); }
-
-        /* APP SHELL */
-        #app { display: none; }
+        /* HEADER & STATS (Igual al tuyo) */
         .header { background: var(--primary); padding: 18px 16px 14px; display: flex; align-items: center; gap: 12px; }
         .avatar { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; border: 2px solid rgba(255,255,255,0.15); }
-        .header-info { flex: 1; }
-        .header-saludo { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; }
-        .header-name { font-size: 22px; font-weight: 900; color: white; }
+        .header-info { flex: 1; color: white; }
+        .header-name { font-size: 20px; font-weight: 900; }
         .header-actions { display: flex; gap: 8px; }
         .btn-icon-header { background: rgba(255,255,255,0.12); border: none; border-radius: 12px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
 
-        /* STATS */
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--primary); border-top: 1px solid rgba(255,255,255,0.08); padding: 0 8px 16px; gap: 6px; }
-        .stat { background: rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 6px; text-align: center; }
-        .stat-n { font-size: 22px; font-weight: 900; color: white; }
-        .stat-l { font-size: 9px; color: rgba(255,255,255,0.45); text-transform: uppercase; }
-        .stat-n.red { color: var(--accent); }
-        .stat-n.orange { color: #FFA502; }
+        /* CALENDARIO ESTILOS */
+        .cal-container { background: white; margin: 10px; border-radius: var(--radius); padding: 15px; box-shadow: var(--shadow); }
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: 900; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+        .cal-day-name { font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; }
+        .cal-day { padding: 10px 0; border-radius: 10px; font-size: 14px; font-weight: 700; position: relative; cursor: pointer; }
+        .cal-day.today { background: var(--primary); color: white; }
+        .cal-day.has-note::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
+        .cal-day.selected { border: 2px solid var(--accent); }
+        .cal-day.other-month { opacity: 0.3; }
 
-        /* FILTROS */
-        .filtros-wrap { background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 20; }
-        .filtros-row, .autor-row { display: flex; gap: 6px; overflow-x: auto; padding: 10px 14px; scrollbar-width: none; }
-        .filtros-row::-webkit-scrollbar, .autor-row::-webkit-scrollbar { display: none; }
-        .chip, .chip-autor { flex-shrink: 0; padding: 7px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: #F8F8F8; font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap; }
-        .chip.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .chip-autor.active { color: white; border-color: transparent; }
-        #chip-autor-mati.active { background: var(--u-mati); }
-        #chip-autor-lis.active { background: var(--u-lis); }
-        #chip-autor-agus.active { background: var(--u-agus); }
-        #chip-autor-mia.active { background: var(--u-mia); }
+        /* LISTA DE TAREAS DEL DÍA SELECCIONADO */
+        .agenda-day { padding: 0 14px 20px; }
+        .agenda-title { font-size: 14px; font-weight: 800; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; }
 
-        /* TABLERO & NOTAS */
-        .tablero { padding: 14px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 110px; }
-        .nota { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; position: relative; border-left: 5px solid #ccc; }
-        .nota-inner { padding: 14px; }
-        .nota-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
-        .nota-icono { font-size: 24px; }
-        .nota-meta { flex: 1; }
-        .nota-cat-label { font-size: 9px; font-weight: 900; text-transform: uppercase; color: var(--muted); }
-        .nota-user { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 10px; color: white; }
-        .nota-user.u-mati { background: var(--u-mati); }
-        .nota-user.u-lis { background: var(--u-lis); }
-        .nota-user.u-agus { background: var(--u-agus); }
-        .nota-user.u-mia { background: var(--u-mia); }
-        .nota-contenido { font-size: 16px; font-weight: 700; line-height: 1.4; margin-bottom: 10px; cursor: pointer; }
+        /* NOTAS & TABLERO (Compacto para móvil) */
+        .tablero { padding: 14px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 100px; }
+        .nota { background: white; border-radius: var(--radius); padding: 15px; box-shadow: var(--shadow); border-left: 5px solid #ccc; position: relative; }
+        .nota-user { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 10px; color: white; margin-bottom: 5px; display: inline-block; }
+        .u-mati { background: var(--u-mati); } .u-lis { background: var(--u-lis); } .u-agus { background: var(--u-agus); } .u-mia { background: var(--u-mia); }
+        .nota-content { font-size: 16px; font-weight: 700; margin: 5px 0; }
+        .nota-foot { display: flex; gap: 8px; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; }
+        .btn-check { flex: 1; background: #E8FDF0; border: none; padding: 8px; border-radius: 10px; color: #2ED573; font-weight: 800; }
+        .btn-del { background: #FFEBEB; border: none; padding: 8px 15px; border-radius: 10px; color: var(--accent); }
+
+        /* MODALES */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: flex-end; }
+        .modal.open { display: flex; }
+        .modal-sheet { background: white; width: 100%; border-radius: 20px 20px 0 0; padding: 20px; max-height: 90vh; overflow-y: auto; }
+        .fab { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--accent); color: white; border: none; font-size: 30px; box-shadow: 0 5px 15px rgba(255,71,87,0.4); }
         
-        .fecha-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; padding: 4px 9px; border-radius: 20px; margin-bottom: 10px; }
-        .fecha-badge.vencida { background: #FFEBEB; color: var(--accent); animation: pulso 1.4s infinite; }
-        .fecha-badge.hoy { background: #E0F4FF; color: #1E90FF; }
-        @keyframes pulso { 0%,100%{ opacity:1 } 50%{ opacity:0.5 } }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1.5px solid var(--border); font-family: inherit; font-weight: 700; }
+        .btn-save { background: var(--primary); color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 800; margin-top: 10px; }
 
-        .nota-foot { display: flex; gap: 8px; border-top: 1px solid #F0F0F0; padding-top: 10px; }
-        .btn-completar { flex: 1; background: #F0FFF4; border: 1.5px solid #2ED573; border-radius: 10px; padding: 9px; font-weight: 800; color: #2ED573; cursor: pointer; }
-        .btn-borrar-nota { background: #FFF0F0; border: 1.5px solid #FFCDD2; border-radius: 10px; padding: 9px 14px; color: var(--accent); cursor: pointer; }
-        .lock-msg { font-size: 11px; color: var(--muted); font-weight: 700; display: flex; align-items: center; gap: 4px; }
-
-        /* FAB */
-        .fab { position: fixed; bottom: 24px; right: 18px; width: 62px; height: 62px; border-radius: 50%; background: var(--accent); color: white; border: none; font-size: 32px; box-shadow: 0 6px 24px rgba(255,71,87,0.4); cursor: pointer; z-index: 30; }
-
-        /* MODALS */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 100; align-items: flex-end; backdrop-filter: blur(2px); }
-        .modal-overlay.open { display: flex; }
-        .modal-sheet { background: var(--card); width: 100%; border-radius: 22px 22px 0 0; padding: 20px 18px 36px; max-height: 92vh; overflow-y: auto; animation: slideUp 0.28s ease; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-handle { width: 40px; height: 4px; background: #E0E0E0; border-radius: 2px; margin: -8px auto 18px; }
-        
-        /* FORM */
-        .field-label { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; margin-top: 14px; margin-bottom: 6px; }
-        input, textarea, select { width: 100%; padding: 13px; border-radius: 12px; border: 1.5px solid var(--border); font-family: 'Nunito'; font-weight: 700; background: #F9F9F9; }
-        .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .cat-opt { padding: 10px; border-radius: 12px; border: 2px solid var(--border); text-align: center; cursor: pointer; }
-        .cat-opt.selected { border-color: var(--primary); background: var(--primary); color: white; }
-        .cat-opt .cat-nm { font-size: 10px; font-weight: 800; }
-        .btn-main { background: var(--primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 14px; font-weight: 900; margin-top: 16px; cursor: pointer; }
-        
-        /* COLORES NOTAS */
-        .nota[data-cat="super"] { border-left-color: var(--cat-super); }
-        .nota[data-cat="urgente"] { border-left-color: var(--cat-urgente); }
-        .nota[data-cat="casa"] { border-left-color: var(--cat-casa); }
-        .nota[data-cat="pagos"] { border-left-color: var(--cat-pagos); }
+        /* OCULTAR ELEMENTOS */
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-
-<div id="access-denied">
-    <div style="font-size:60px">🔒</div>
-    <h2>Acceso Privado</h2>
-    <p>Pedile tu link a Mati 😄</p>
-</div>
 
 <div id="app">
     <div class="header">
         <div class="avatar" id="avatar">?</div>
         <div class="header-info">
-            <div class="header-saludo">Hola 👋</div>
-            <div class="header-name" id="header-name">...</div>
+            <div style="font-size: 11px; opacity: 0.7;">HOLA 👋</div>
+            <div class="header-name" id="user-name">Cargando...</div>
         </div>
         <div class="header-actions">
-            <button class="btn-icon-header" onclick="abrirSuper()">🛒</button>
+            <button class="btn-icon-header" onclick="toggleVista('tablero')">📋</button>
+            <button class="btn-icon-header" onclick="toggleVista('calendario')">📅</button>
         </div>
     </div>
 
-    <div class="stats">
-        <div class="stat"><div class="stat-n" id="s-total">0</div><div class="stat-l">Total</div></div>
-        <div class="stat"><div class="stat-n red" id="s-urgentes">0</div><div class="stat-l">Urgentes</div></div>
-        <div class="stat"><div class="stat-n orange" id="s-vencidas">0</div><div class="stat-l">Vencidas</div></div>
-        <div class="stat"><div class="stat-n" id="s-hoy">0</div><div class="stat-l">Hoy</div></div>
+    <div id="vista-tablero">
+        <div id="lista-notas" class="tablero"></div>
     </div>
 
-    <div class="filtros-wrap">
-        <div class="filtros-row" id="chips-cat">
-            <button class="chip active" onclick="filtrar('todas', this)">Todas</button>
-            <button class="chip" onclick="filtrar('super', this)">🛒 Súper</button>
-            <button class="chip" onclick="filtrar('urgente', this)">🚨 Urgente</button>
-            <button class="chip" onclick="filtrar('casa', this)">🏠 Casa</button>
-            <button class="chip" onclick="filtrar('pagos', this)">💰 Pagos</button>
+    <div id="vista-calendario" class="hidden">
+        <div class="cal-container">
+            <div class="cal-header">
+                <button onclick="changeMonth(-1)" style="border:none; background:none; font-size:20px;">‹</button>
+                <div id="cal-month-year">Mes Año</div>
+                <button onclick="changeMonth(1)" style="border:none; background:none; font-size:20px;">›</button>
+            </div>
+            <div class="cal-grid" id="cal-grid"></div>
         </div>
-        <div class="autor-row">
-            <button class="chip-autor active" id="chip-autor-todas" onclick="filtrarAutor('todas', this)">Todos</button>
-            <button class="chip-autor" id="chip-autor-mati" onclick="filtrarAutor('mati', this)">Mati</button>
-            <button class="chip-autor" id="chip-autor-lis" onclick="filtrarAutor('lis', this)">Lis</button>
+        <div class="agenda-day">
+            <div class="agenda-title" id="agenda-date-label">Selecciona un día</div>
+            <div id="agenda-notas"></div>
         </div>
     </div>
 
-    <div id="tablero" class="tablero"></div>
-    <button class="fab" onclick="abrirNuevaNota()">＋</button>
+    <button class="fab" onclick="abrirModal()">＋</button>
 </div>
 
-<div class="modal-overlay" id="modal-nota">
+<div class="modal" id="modal-nota">
     <div class="modal-sheet">
-        <div class="modal-handle"></div>
-        <div class="modal-title" id="modal-nota-titulo">Nueva Nota</div>
+        <h2 id="modal-title">Nueva Nota</h2>
         <input type="hidden" id="f-id">
-        
-        <div class="field-label">Categoría</div>
-        <div class="cat-grid">
-            <div class="cat-opt" data-cat="super" data-ico="🛒" onclick="selCat(this)"><div class="cat-nm">Súper</div></div>
-            <div class="cat-opt" data-cat="urgente" data-ico="🚨" onclick="selCat(this)"><div class="cat-nm">Urgente</div></div>
-            <div class="cat-opt" data-cat="casa" data-ico="🏠" onclick="selCat(this)"><div class="cat-nm">Casa</div></div>
-            <div class="cat-opt" data-cat="pagos" data-ico="💰" onclick="selCat(this)"><div class="cat-nm">Pagos</div></div>
-        </div>
-
-        <div class="field-label">Tarea</div>
-        <textarea id="f-txt" placeholder="Escribí aquí..."></textarea>
-
-        <div class="field-label">Fecha Límite</div>
+        <select id="f-cat">
+            <option value="casa">🏠 Casa</option>
+            <option value="super">🛒 Súper</option>
+            <option value="urgente">🚨 Urgente</option>
+            <option value="eventos">🎉 Eventos</option>
+            <option value="pagos">💰 Pagos</option>
+        </select>
+        <textarea id="f-txt" placeholder="¿Qué hay que hacer?"></textarea>
         <input type="date" id="f-fecha">
-
-        <button class="btn-main" onclick="guardar()">🚀 Guardar Nota</button>
-        <button class="btn-main" style="background:none; color:var(--muted)" onclick="cerrarModal('modal-nota')">Cancelar</button>
+        <button class="btn-save" onclick="guardar()">Guardar Nota</button>
+        <button onclick="cerrarModal()" style="width:100%; background:none; border:none; padding:10px; color:var(--muted); font-weight:700;">Cancelar</button>
     </div>
 </div>
 
@@ -196,150 +130,143 @@
         messagingSenderId: "1043185917487",
         appId: "1:1043185917487:web:5ec89f80b6f726e99270da"
     };
-    
+
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const perfiles = {
-        mati: { n: 'Mati', e: '👨🏻‍💻', bg: '#EBF2FC' },
-        lis:  { n: 'Lis',  e: '👩🏻‍🍳', bg: '#FCE8F3' },
-        agus: { n: 'Agus', e: '👧🏻',  bg: '#F0EBF9' },
-        mia:  { n: 'Mia',  e: '👩🏻‍🎓', bg: '#E8F9EE' }
-    };
-
     const userKey = (new URLSearchParams(window.location.search).get('u') || '').toLowerCase();
     const esAdmin = (userKey === 'mati' || userKey === 'lis');
-
-    if (perfiles[userKey]) {
-        document.getElementById("app").style.display = "block";
-        const p = perfiles[userKey];
-        document.getElementById("header-name").innerText = p.n;
-        document.getElementById("avatar").innerText = p.e;
-        document.getElementById("avatar").style.background = p.bg;
-    } else {
-        document.getElementById("access-denied").style.display = "flex";
-    }
+    const perfiles = { mati: '👨🏻‍💻', lis: '👩🏻‍🍳', agus: '👧🏻', mia: '👩🏻‍🎓' };
 
     let notas = [];
-    let filtroCat = 'todas';
-    let filtroAut = 'todas';
-    let catSel = null;
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+    let selectedDate = new Date().toISOString().split('T')[0];
 
-    onValue(ref(db, 'pendientes'), (s) => {
-        const d = s.val();
-        notas = d ? Object.keys(d).map(k => ({ id: k, ...d[k] })) : [];
-        render();
-    });
-
-    function render() {
-        const filtradas = notas.filter(n => {
-            return (filtroCat === 'todas' || n.categoria === filtroCat) && 
-                   (filtroAut === 'todas' || n.autor === filtroAut);
+    // INICIO
+    if(perfiles[userKey]) {
+        document.getElementById('user-name').innerText = userKey.toUpperCase();
+        document.getElementById('avatar').innerText = perfiles[userKey];
+        onValue(ref(db, 'pendientes'), (snapshot) => {
+            const data = snapshot.val();
+            notas = data ? Object.keys(data).map(id => ({id, ...data[id]})) : [];
+            renderTablero();
+            renderCalendario();
+            renderAgenda(selectedDate);
         });
-
-        // Stats
-        document.getElementById('s-total').innerText = notas.length;
-        document.getElementById('s-urgentes').innerText = notas.filter(n => n.categoria === 'urgente').length;
-        
-        const tab = document.getElementById("tablero");
-        tab.innerHTML = filtradas.map(n => {
-            const p = perfiles[n.autor] || { n: n.autor, e:'👤' };
-            const status = n.limite && new Date(n.limite) < new Date() ? 'vencida' : '';
-            
-            return `
-            <div class="nota" data-cat="${n.categoria}">
-                <div class="nota-inner">
-                    <div class="nota-top">
-                        <div class="nota-icono">${n.icono || '📌'}</div>
-                        <div class="nota-meta">
-                            <span class="nota-user u-${n.autor}">${p.e} ${p.n}</span>
-                        </div>
-                    </div>
-                    <div class="nota-contenido" onclick="editarNota('${n.id}')">${n.contenido}</div>
-                    ${n.limite ? `<div class="fecha-badge ${status}">📅 ${n.limite}</div>` : ''}
-                    
-                    <div class="nota-foot">
-                        ${esAdmin ? `
-                            <button class="btn-completar" onclick="borrar('${n.id}')">✅ Listo</button>
-                            <button class="btn-borrar-nota" onclick="borrar('${n.id}')">🗑️</button>
-                        ` : `
-                            <div class="lock-msg">🔒 Solo Papá o Mamá</div>
-                        `}
-                    </div>
-                </div>
-            </div>`;
-        }).join('');
     }
 
-    window.abrirNuevaNota = () => {
-        document.getElementById('f-id').value = "";
-        document.getElementById('f-txt').value = "";
-        document.getElementById('f-fecha').value = "";
-        document.getElementById('modal-nota-titulo').innerText = "Nueva Nota";
-        abrirModal('modal-nota');
+    // NAVEGACIÓN
+    window.toggleVista = (vista) => {
+        document.getElementById('vista-tablero').classList.toggle('hidden', vista !== 'tablero');
+        document.getElementById('vista-calendario').classList.toggle('hidden', vista !== 'calendario');
     };
 
-    window.editarNota = (id) => {
+    // RENDER LISTA NORMAL
+    function renderTablero() {
+        const container = document.getElementById('lista-notas');
+        container.innerHTML = notas.map(n => cardHtml(n)).join('');
+    }
+
+    // CARD HTML (Reutilizable)
+    function cardHtml(n) {
+        return `
+            <div class="nota" style="border-left-color: var(--cat-${n.categoria})">
+                <span class="nota-user u-${n.autor}">${n.autor}</span>
+                <div class="nota-content" onclick="editar('${n.id}')">${n.contenido}</div>
+                ${n.limite ? `<div style="font-size:11px; color:var(--accent); font-weight:800;">📅 ${n.limite}</div>` : ''}
+                <div class="nota-foot">
+                    ${esAdmin ? `
+                        <button class="btn-check" onclick="eliminar('${n.id}')">✓ Terminar</button>
+                        <button class="btn-del" onclick="eliminar('${n.id}')">🗑️</button>
+                    ` : `<div style="font-size:11px; color:var(--muted)">🔒 Solo Papá/Mamá</div>`}
+                </div>
+            </div>`;
+    }
+
+    // CALENDARIO LÓGICA
+    window.changeMonth = (dir) => {
+        currentMonth += dir;
+        if(currentMonth < 0) { currentMonth = 11; currentYear--; }
+        if(currentMonth > 11) { currentMonth = 0; currentYear++; }
+        renderCalendario();
+    };
+
+    function renderCalendario() {
+        const grid = document.getElementById('cal-grid');
+        const monthLabel = document.getElementById('cal-month-year');
+        const names = ['DOM','LUN','MAR','MIE','JUE','VIE','SAB'];
+        const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+        
+        monthLabel.innerText = `${months[currentMonth]} ${currentYear}`;
+        grid.innerHTML = names.map(n => `<div class="cal-day-name">${n}</div>`).join('');
+
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        for(let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="cal-day other-month"></div>`;
+
+        for(let d = 1; d <= daysInMonth; d++) {
+            const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const hasNote = notas.some(n => n.limite === dateStr);
+            const isToday = new Date().toISOString().split('T')[0] === dateStr;
+            
+            grid.innerHTML += `
+                <div class="cal-day ${isToday?'today':''} ${hasNote?'has-note':''} ${selectedDate === dateStr?'selected':''}" 
+                     onclick="selectDate('${dateStr}')">
+                    ${d}
+                </div>`;
+        }
+    }
+
+    window.selectDate = (date) => {
+        selectedDate = date;
+        renderCalendario();
+        renderAgenda(date);
+    };
+
+    function renderAgenda(date) {
+        const container = document.getElementById('agenda-notas');
+        const label = document.getElementById('agenda-date-label');
+        const tareasDia = notas.filter(n => n.limite === date);
+        
+        label.innerText = `Tareas para el ${date.split('-').reverse().join('/')}`;
+        container.innerHTML = tareasDia.length ? tareasDia.map(n => cardHtml(n)).join('') : '<p style="text-align:center; padding:20px; color:var(--muted)">Sin eventos para hoy</p>';
+    }
+
+    // CRUD
+    window.abrirModal = () => {
+        document.getElementById('f-id').value = "";
+        document.getElementById('f-txt').value = "";
+        document.getElementById('modal-nota').classList.add('open');
+    };
+
+    window.cerrarModal = () => document.getElementById('modal-nota').classList.remove('open');
+
+    window.editar = (id) => {
         const n = notas.find(x => x.id === id);
-        if(!n) return;
         document.getElementById('f-id').value = n.id;
         document.getElementById('f-txt').value = n.contenido;
         document.getElementById('f-fecha').value = n.limite || "";
-        document.getElementById('modal-nota-titulo').innerText = "Editar Nota";
-        catSel = n.categoria;
-        document.querySelectorAll('.cat-opt').forEach(o => {
-            o.classList.toggle('selected', o.dataset.cat === n.categoria);
-        });
-        abrirModal('modal-nota');
+        document.getElementById('modal-nota').classList.add('open');
     };
 
     window.guardar = () => {
         const id = document.getElementById('f-id').value;
-        const txt = document.getElementById('f-txt').value;
-        const fecha = document.getElementById('f-fecha').value;
-        if(!txt || !catSel) return alert("Completa los datos");
-
         const data = {
-            contenido: txt,
-            categoria: catSel,
-            limite: fecha,
-            autor: userKey,
-            icono: document.querySelector(`[data-cat="${catSel}"]`).dataset.ico
+            contenido: document.getElementById('f-txt').value,
+            categoria: document.getElementById('f-cat').value,
+            limite: document.getElementById('f-fecha').value,
+            autor: userKey
         };
-
-        if(id) update(ref(db, `pendientes/${id}`), data);
-        else push(ref(db, 'pendientes'), data);
-        
-        cerrarModal('modal-nota');
+        if(!data.contenido) return;
+        id ? update(ref(db, `pendientes/${id}`), data) : push(ref(db, 'pendientes'), data);
+        cerrarModal();
     };
 
-    window.borrar = (id) => {
-        if(confirm("¿Eliminar nota?")) remove(ref(db, `pendientes/${id}`));
+    window.eliminar = (id) => {
+        if(confirm("¿Completada o eliminar?")) remove(ref(db, `pendientes/${id}`));
     };
-
-    window.selCat = (el) => {
-        catSel = el.dataset.cat;
-        document.querySelectorAll('.cat-opt').forEach(o => o.classList.remove('selected'));
-        el.classList.add('selected');
-    };
-
-    window.filtrar = (c, b) => {
-        filtroCat = c;
-        document.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        render();
-    };
-
-    window.filtrarAutor = (a, b) => {
-        filtroAut = a;
-        document.querySelectorAll('.chip-autor').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        render();
-    };
-
-    window.abrirModal = (id) => document.getElementById(id).classList.add('open');
-    window.cerrarModal = (id) => document.getElementById(id).classList.remove('open');
 </script>
-
 </body>
 </html>
