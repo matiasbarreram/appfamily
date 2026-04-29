@@ -13,7 +13,6 @@
     <style>
         :root {
             --bg: #f0f0eb;
-            --card: #ffffff;
             --primary: #1a1a2e;
             --accent: #e84545;
             --green: #2ecc71;
@@ -44,7 +43,6 @@
         #access-denied h2 { font-size: 22px; font-weight: 900; color: var(--primary); }
         #access-denied p { color: var(--muted); margin-top: 8px; font-size: 15px; font-weight: 600; }
 
-        /* ── MAIN APP ── */
         #app { display: none; }
 
         /* ── HEADER ── */
@@ -62,12 +60,10 @@
         .header-text { flex: 1; min-width: 0; }
         .header-greeting { color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         .header-name { color: white; font-size: 22px; font-weight: 900; line-height: 1.1; }
-
         .btn-export-header {
             background: rgba(255,255,255,0.12); border: none; border-radius: 12px;
             padding: 10px 13px; color: white; font-family: 'Nunito', sans-serif;
             font-size: 12px; font-weight: 800; cursor: pointer; flex-shrink: 0;
-            transition: background 0.15s;
         }
         .btn-export-header:active { background: rgba(255,255,255,0.22); }
 
@@ -81,16 +77,13 @@
         .stat-n { font-size: 24px; font-weight: 900; color: var(--primary); line-height: 1; }
         .stat-l { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
 
-        /* ── FILTROS PERMANENTES ── */
+        /* ── FILTROS STICKY ── */
         .filtros-sticky {
             position: sticky; top: 0; z-index: 50;
             background: white; border-bottom: 2px solid var(--border);
         }
         .filtros-bloque { padding: 9px 14px; }
-        .filtros-label {
-            font-size: 10px; font-weight: 800; color: var(--muted);
-            text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px;
-        }
+        .filtros-label { font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; }
         .chips-scroll {
             display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px;
             -webkit-overflow-scrolling: touch; scrollbar-width: none;
@@ -106,11 +99,8 @@
         .chip:active { transform: scale(0.93); }
         .filtros-div { height: 1px; background: var(--border); }
 
-        /* ── SCROLL AREA ── */
-        .scroll-area {
-            overflow-y: auto; -webkit-overflow-scrolling: touch;
-            padding-bottom: 90px;
-        }
+        /* ── SCROLL ── */
+        .scroll-area { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 90px; }
 
         /* ── FAB ── */
         .fab {
@@ -122,11 +112,10 @@
             border: none; font-size: 30px; cursor: pointer;
             box-shadow: 0 6px 24px rgba(232,69,69,0.4);
             display: flex; align-items: center; justify-content: center;
-            transition: transform 0.2s;
         }
         .fab:active { transform: scale(0.88); }
 
-        /* ── BOTTOM SHEET (NUEVA TAREA) ── */
+        /* ── BOTTOM SHEET ── */
         .sheet-overlay {
             display: none; position: fixed; inset: 0;
             background: rgba(0,0,0,0.45); z-index: 70; align-items: flex-end;
@@ -139,7 +128,6 @@
             animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
         .sheet-top {
             position: sticky; top: 0; background: white; z-index: 1;
             padding: 14px 18px 10px;
@@ -164,10 +152,7 @@
         }
         select:focus, input:focus { border-color: var(--primary); background: white; }
         input[type="date"] { color: var(--primary); font-weight: 700; cursor: pointer; }
-        .date-hint {
-            font-size: 12px; color: var(--accent); font-weight: 700;
-            min-height: 18px; margin-top: -8px; padding-left: 4px;
-        }
+        .date-hint { font-size: 12px; color: var(--accent); font-weight: 700; min-height: 18px; margin-top: -8px; padding-left: 4px; }
         .btn-publicar {
             background: var(--primary); color: white; border: none;
             padding: 16px; border-radius: 14px; width: 100%;
@@ -176,13 +161,12 @@
         }
         .btn-publicar:active { transform: scale(0.97); }
 
-        /* ── TABLERO ── */
+        /* ── NOTAS ── */
         .tablero-wrap { padding: 12px 14px; display: grid; gap: 10px; }
         .empty-state { text-align: center; padding: 60px 20px; }
         .empty-icon { font-size: 48px; opacity: 0.3; margin-bottom: 10px; }
         .empty-txt { font-size: 15px; color: var(--muted); font-weight: 700; }
 
-        /* ── NOTA ── */
         .nota {
             background: white; border-radius: 16px;
             overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -214,21 +198,23 @@
         }
         .btn-borrar:active { transform: scale(0.88); }
 
-        /* Colores por categoría */
         .cat-compras      { border-top: 3px solid var(--accent); }
         .cat-compras      .nota-cat { color: var(--accent); }
         .cat-limpieza     { border-top: 3px solid var(--green); }
         .cat-limpieza     .nota-cat { color: var(--green); }
         .cat-reparaciones { border-top: 3px solid #e67e22; }
         .cat-reparaciones .nota-cat { color: #e67e22; }
-        .cat-comida        { border-top: 3px solid #e91e8c; }
-        .cat-comida        .nota-cat { color: #e91e8c; }
+        .cat-comida       { border-top: 3px solid #e91e8c; }
+        .cat-comida       .nota-cat { color: #e91e8c; }
         .cat-mascotas     { border-top: 3px solid var(--purple); }
         .cat-mascotas     .nota-cat { color: var(--purple); }
         .cat-colegio      { border-top: 3px solid var(--blue); }
         .cat-colegio      .nota-cat { color: var(--blue); }
         .cat-recordatorio { border-top: 3px solid var(--yellow); }
         .cat-recordatorio .nota-cat { color: var(--yellow); }
+        /* notas sin categoría (datos viejos) */
+        .cat-sin          { border-top: 3px solid #ccc; }
+        .cat-sin          .nota-cat { color: #ccc; }
 
         /* ── MODAL EXPORT ── */
         .modal-overlay {
@@ -245,7 +231,6 @@
         .modal-handle { width: 38px; height: 4px; background: var(--border); border-radius: 4px; margin: 0 auto 16px; }
         .modal-title { font-size: 18px; font-weight: 900; color: var(--primary); margin-bottom: 4px; }
         .modal-sub { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 14px; }
-
         .export-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
         .export-tab {
             flex: 1; padding: 10px; border-radius: 10px; border: 2px solid var(--border);
@@ -253,7 +238,6 @@
             font-size: 13px; font-weight: 800; color: var(--muted); cursor: pointer;
         }
         .export-tab.active { border-color: var(--primary); background: var(--primary); color: white; }
-
         .export-item {
             display: flex; align-items: center; gap: 12px;
             padding: 12px 0; border-bottom: 1px solid var(--border);
@@ -263,15 +247,12 @@
         .export-texto { flex: 1; font-size: 15px; font-weight: 700; color: var(--text); }
         .export-meta { font-size: 11px; color: var(--muted); font-weight: 600; text-align: right; }
         .export-empty { text-align: center; padding: 30px; color: var(--muted); font-weight: 700; }
-
         .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
         .btn-modal {
             padding: 14px; border-radius: 14px; border: none;
-            font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800;
-            cursor: pointer;
+            font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer;
         }
         .btn-modal:active { transform: scale(0.96); }
-        .btn-modal.primary   { background: var(--primary); color: white; }
         .btn-modal.whatsapp  { background: #25D366; color: white; }
         .btn-modal.secondary { background: var(--bg); color: var(--text); border: 2px solid var(--border); }
     </style>
@@ -343,6 +324,7 @@
     <button class="fab" onclick="abrirSheet()">＋</button>
 </div>
 
+<!-- SHEET NUEVA TAREA -->
 <div class="sheet-overlay" id="sheet-overlay" onclick="cerrarSheetOverlay(event)">
     <div class="sheet">
         <div class="sheet-top">
@@ -351,6 +333,7 @@
         </div>
         <div class="sheet-title">Nueva Tarea</div>
         <div class="form-body">
+            <input id="quien" type="hidden">
             <div>
                 <label>Categoría</label>
                 <select id="icono">
@@ -363,12 +346,338 @@
                     <option value="💡|recordatorio">💡 Recordatorio</option>
                 </select>
             </div>
-
             <div>
                 <label>Descripción</label>
                 <input type="text" id="texto" placeholder="Ej: Comprar leche, arreglar luz...">
             </div>
-
             <div>
                 <label>Fecha límite (opcional)</label>
-                <input type="date" id="fechaCompromiso" onchange
+                <input type="date" id="fechaCompromiso" onchange="actualizarFechaHint()">
+                <div class="date-hint" id="fecha-hint"></div>
+            </div>
+            <button class="btn-publicar" onclick="guardar()">🚀 Publicar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EXPORTAR -->
+<div class="modal-overlay" id="modal-export" onclick="cerrarExportOverlay(event)">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <div class="modal-title">📤 Exportar</div>
+        <div class="modal-sub" id="modal-sub"></div>
+        <div class="export-tabs">
+            <button class="export-tab active" id="tab-compras" onclick="switchTab('compras')">🛒 Solo Compras</button>
+            <button class="export-tab" id="tab-todo" onclick="switchTab('todo')">📋 Todo el Tablero</button>
+        </div>
+        <div id="export-lista"></div>
+        <div class="modal-btns">
+            <button class="btn-modal secondary" onclick="cerrarExport()">Cerrar</button>
+            <button class="btn-modal whatsapp" onclick="compartirWhatsApp()">💬 WhatsApp</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDG6icP-ZCbtMouvxb90OwI1cmse56fnjs",
+        authDomain: "app-family-notas.firebaseapp.com",
+        databaseURL: "https://app-family-notas-default-rtdb.firebaseio.com",
+        projectId: "app-family-notas",
+        storageBucket: "app-family-notas.firebasestorage.app",
+        messagingSenderId: "1043185917487",
+        appId: "1:1043185917487:web:5ec89f80b6f726e99270da"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
+
+    // Tabla de perfiles: clave SIEMPRE en minúscula
+    // La app acepta tanto ?u=Mati como ?u=mati en la URL
+    const perfiles = {
+        'mati': { nombre: 'Mati', emoji: '👨🏻‍💻', color: '#dfe6fd' },
+        'lis':  { nombre: 'Lis',  emoji: '👩🏻‍🍳', color: '#fde8f0' },
+        'agus': { nombre: 'Agus', emoji: '👧🏻',   color: '#ede8fd' },
+        'mia':  { nombre: 'Mia',  emoji: '👩🏻‍🎓', color: '#e2fde8' }
+    };
+
+    // Normaliza cualquier variante a clave minúscula
+    // Ej: "Mati" → "mati", "MATI" → "mati"
+    function normalizar(str) {
+        return (str || '').toLowerCase().trim();
+    }
+
+    const coloresUser = { mati: '#4d96ff', lis: '#e84545', agus: '#9b59b6', mia: '#2ecc71' };
+    const catLabels   = {
+        compras: 'Compras', limpieza: 'Casa', reparaciones: 'Reparaciones',
+        comida: 'Comida', mascotas: 'Mascotas', colegio: 'Colegio', recordatorio: 'Recordatorio'
+    };
+
+    // ── AUTH ──
+    // Acepta ?u=mati o ?u=Mati indistintamente
+    const rawParam = new URLSearchParams(window.location.search).get('u') || '';
+    const userKey  = normalizar(rawParam); // siempre minúscula
+
+    if (userKey && perfiles[userKey]) {
+        const p = perfiles[userKey];
+        document.getElementById("app").style.display        = "block";
+        document.getElementById("quien").value              = userKey;   // guardamos en minúscula
+        document.getElementById("header-name").innerText    = p.nombre;  // mostramos con mayúscula
+        const av = document.getElementById("avatar");
+        av.innerText             = p.emoji;
+        av.style.backgroundColor = p.color;
+    } else {
+        document.getElementById("access-denied").style.display = "flex";
+    }
+
+    // ── ESTADO ──
+    let todasLasNotas = [];
+    let filtros   = { cat: 'todas', user: 'todos' };
+    let exportTab = 'compras';
+
+    // ── FILTROS ──
+    window.setFiltro = function(tipo, val, btn) {
+        filtros[tipo] = val;
+        const grupoId = tipo === 'cat' ? 'chips-cat' : 'chips-user';
+        document.querySelectorAll(`#${grupoId} .chip`).forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        renderNotas();
+    };
+
+    // ── FECHA ──
+    function estadoFecha(limite) {
+        if (!limite) return null;
+        const [y, m, d] = limite.split('-');
+        const fecha = new Date(+y, +m - 1, +d);
+        const hoy   = new Date(); hoy.setHours(0,0,0,0);
+        const diff  = Math.round((fecha - hoy) / 86400000);
+        if (diff < 0)   return { clase: 'vencido', txt: `⚠️ Venció hace ${Math.abs(diff)}d` };
+        if (diff === 0) return { clase: 'hoy',     txt: '⚡ Vence hoy' };
+        if (diff <= 3)  return { clase: 'pronto',  txt: `⏰ ${diff}d restantes` };
+        return { clase: '', txt: `🗓️ ${fecha.toLocaleDateString('es-CL',{ day:'numeric', month:'short' })}` };
+    }
+
+    window.actualizarFechaHint = function() {
+        const val = document.getElementById("fechaCompromiso").value;
+        const el  = document.getElementById("fecha-hint");
+        if (!val) { el.innerText = ''; return; }
+        const [y,m,d] = val.split('-');
+        const fecha   = new Date(+y, +m-1, +d);
+        const hoy     = new Date(); hoy.setHours(0,0,0,0);
+        const diff    = Math.round((fecha - hoy) / 86400000);
+        if (diff < 0)        el.innerText = '⚠️ Esa fecha ya pasó';
+        else if (diff === 0) el.innerText = '⚡ Para hoy';
+        else if (diff === 1) el.innerText = '📅 Para mañana';
+        else el.innerText = `📅 En ${diff} días — ${fecha.toLocaleDateString('es-CL',{ weekday:'long', day:'numeric', month:'long' })}`;
+    };
+
+    // ── GUARDAR ──
+    // Siempre guarda autor en minúscula para datos nuevos
+    window.guardar = function() {
+        const u = document.getElementById("quien").value; // ya es minúscula
+        const t = document.getElementById("texto").value.trim();
+        if (!u || !t) { alert('Escribí una descripción 😊'); return; }
+        const sel = document.getElementById("icono").value.split('|');
+        const f   = document.getElementById("fechaCompromiso").value;
+        push(ref(db, 'pendientes'), {
+            autor:     u,      // minúscula: "mati", "lis", etc.
+            contenido: t,
+            icono:     sel[0],
+            categoria: sel[1],
+            creado:    new Date().toISOString(),
+            limite:    f || null
+        });
+        document.getElementById("texto").value           = "";
+        document.getElementById("fechaCompromiso").value = "";
+        document.getElementById("fecha-hint").innerText  = "";
+        cerrarSheet();
+    };
+
+    // ── BORRAR ──
+    window.borrar = (id) => {
+        if (confirm("¿Marcar como completada? Se eliminará del tablero.")) {
+            remove(ref(db, 'pendientes/' + id));
+        }
+    };
+
+    // ── RENDER ──
+    function renderNotas() {
+        const tablero = document.getElementById("tablero");
+
+        const filtradas = todasLasNotas.filter(n => {
+            // Normalizamos el autor guardado también (puede ser "Mati" en datos viejos)
+            const autorNorm = normalizar(n.autor);
+            const catOk  = filtros.cat  === 'todas' || n.categoria === filtros.cat;
+            const userOk = filtros.user === 'todos' || autorNorm   === filtros.user;
+            return catOk && userOk;
+        });
+
+        // Stats sobre el total (sin filtros)
+        const hoy = new Date(); hoy.setHours(0,0,0,0);
+        document.getElementById('stat-total').innerText   = todasLasNotas.length;
+        document.getElementById('stat-compras').innerText = todasLasNotas.filter(n => n.categoria === 'compras').length;
+        document.getElementById('stat-hoy').innerText     = todasLasNotas.filter(n => {
+            if (!n.limite) return false;
+            const [y,m,d] = n.limite.split('-');
+            return new Date(+y,+m-1,+d).getTime() === hoy.getTime();
+        }).length;
+
+        if (filtradas.length === 0) {
+            tablero.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-txt">Sin tareas aquí</div></div>`;
+            return;
+        }
+
+        // Ordenar por urgencia → fecha → más nuevo
+        filtradas.sort((a, b) => {
+            if (a.limite && b.limite) return a.limite.localeCompare(b.limite);
+            if (a.limite)  return -1;
+            if (b.limite)  return 1;
+            return (b.creado || '').localeCompare(a.creado || '');
+        });
+
+        tablero.innerHTML = filtradas.map(n => {
+            const autorNorm = normalizar(n.autor);
+            const p         = perfiles[autorNorm] || { nombre: n.autor, emoji: '👤' };
+            const fe        = estadoFecha(n.limite);
+            const colorA    = coloresUser[autorNorm] || '#999';
+            const catClass  = n.categoria ? `cat-${n.categoria}` : 'cat-sin';
+            const catLabel  = catLabels[n.categoria] || n.categoria || '—';
+
+            // Fecha de creación: soporta ISO string nuevo y string localeDateString viejo
+            let creadoStr = '—';
+            try {
+                const ts = new Date(n.creado);
+                creadoStr = isNaN(ts) ? n.creado : ts.toLocaleDateString('es-CL',{ day:'numeric', month:'short' });
+            } catch(e) { creadoStr = n.creado || '—'; }
+
+            return `
+            <div class="nota ${catClass}">
+                <div class="nota-top">
+                    <div class="nota-icono">${n.icono || '📌'}</div>
+                    <div class="nota-info">
+                        <div class="nota-cat">${catLabel}</div>
+                        <div class="nota-autor-line" style="color:${colorA}">${p.emoji} ${p.nombre} · ${creadoStr}</div>
+                    </div>
+                </div>
+                <div class="nota-contenido">${n.contenido}</div>
+                <div class="nota-footer">
+                    ${fe ? `<span class="fecha-badge ${fe.clase}">${fe.txt}</span>` : '<span></span>'}
+                    <button class="btn-borrar" onclick="borrar('${n.key}')">🗑️</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // ── SHEET ──
+    window.abrirSheet = function() {
+        document.getElementById('sheet-overlay').classList.add('open');
+        setTimeout(() => document.getElementById('texto').focus(), 380);
+    };
+    window.cerrarSheet = function() {
+        document.getElementById('sheet-overlay').classList.remove('open');
+    };
+    window.cerrarSheetOverlay = function(e) {
+        if (e.target === document.getElementById('sheet-overlay')) cerrarSheet();
+    };
+
+    // ── EXPORT ──
+    window.abrirExport = function() {
+        exportTab = 'compras';
+        document.getElementById('tab-compras').classList.add('active');
+        document.getElementById('tab-todo').classList.remove('active');
+        renderExport();
+        document.getElementById('modal-export').classList.add('open');
+    };
+    window.cerrarExport = function() {
+        document.getElementById('modal-export').classList.remove('open');
+    };
+    window.cerrarExportOverlay = function(e) {
+        if (e.target === document.getElementById('modal-export')) cerrarExport();
+    };
+    window.switchTab = function(tab) {
+        exportTab = tab;
+        document.getElementById('tab-compras').classList.toggle('active', tab === 'compras');
+        document.getElementById('tab-todo').classList.toggle('active', tab === 'todo');
+        renderExport();
+    };
+
+    function getItems() {
+        return exportTab === 'compras'
+            ? todasLasNotas.filter(n => n.categoria === 'compras')
+            : todasLasNotas;
+    }
+
+    function renderExport() {
+        const lista = document.getElementById('export-lista');
+        const sub   = document.getElementById('modal-sub');
+        const items = getItems();
+        if (!items.length) {
+            lista.innerHTML = `<div class="export-empty">📭 No hay ítems para exportar</div>`;
+            sub.innerText = '';
+            return;
+        }
+        sub.innerText = `${items.length} ítem${items.length !== 1 ? 's' : ''}`;
+        lista.innerHTML = items.map(n => {
+            const p  = perfiles[normalizar(n.autor)] || { nombre: n.autor, emoji: '👤' };
+            const fe = estadoFecha(n.limite);
+            return `<div class="export-item">
+                <span class="export-icon">${n.icono || '📌'}</span>
+                <span class="export-texto">${n.contenido}</span>
+                <span class="export-meta">${p.emoji} ${p.nombre}${fe ? '<br>'+fe.txt : ''}</span>
+            </div>`;
+        }).join('');
+    }
+
+    function generarTexto() {
+        const items = getItems();
+        if (!items.length) return '';
+        const titulo = exportTab === 'compras' ? '🛒 LISTA DE COMPRAS' : '📋 TABLERO FAMILIAR';
+        const hoy    = new Date().toLocaleDateString('es-CL',{ day:'numeric', month:'long', year:'numeric' });
+        let txt = `*${titulo}*\n_${hoy}_\n\n`;
+        if (exportTab === 'compras') {
+            txt += items.map((n,i) => {
+                const p  = perfiles[normalizar(n.autor)] || { nombre: n.autor };
+                const fe = estadoFecha(n.limite);
+                return `${i+1}. ${n.contenido}${fe ? ' _('+fe.txt+')_' : ''} — ${p.nombre}`;
+            }).join('\n');
+        } else {
+            const cats = {};
+            items.forEach(n => {
+                const c = n.categoria || 'sin categoría';
+                if (!cats[c]) cats[c] = [];
+                cats[c].push(n);
+            });
+            Object.entries(cats).forEach(([cat, notas]) => {
+                txt += `*${catLabels[cat] || cat}*\n`;
+                notas.forEach((n,i) => {
+                    const p  = perfiles[normalizar(n.autor)] || { nombre: n.autor };
+                    const fe = estadoFecha(n.limite);
+                    txt += `${i+1}. ${n.icono||'📌'} ${n.contenido}${fe?' _('+fe.txt+')_':''} — ${p.nombre}\n`;
+                });
+                txt += '\n';
+            });
+        }
+        return txt.trim();
+    }
+
+    window.compartirWhatsApp = function() {
+        const txt = generarTexto();
+        if (!txt) return;
+        window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank');
+    };
+
+    // ── FIREBASE: escucha en tiempo real ──
+    onValue(ref(db, 'pendientes'), snap => {
+        todasLasNotas = [];
+        snap.forEach(hijo => {
+            todasLasNotas.push({ key: hijo.key, ...hijo.val() });
+        });
+        renderNotas();
+    });
+</script>
+
+</body>
+</html>
