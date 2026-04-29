@@ -2,82 +2,82 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tablero Familiar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Familia</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); }
-    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-4 flex flex-col items-center">
+<body class="bg-slate-900 text-white min-h-screen p-4">
+    <div class="max-w-md mx-auto">
+        <header class="text-center py-6">
+            <h1 id="saludo" class="text-3xl font-bold text-blue-400">Hola Familia 👋</h1>
+            <p class="text-slate-400">Lista compartida en tiempo real</p>
+        </header>
 
-    <div class="w-full max-w-md mt-10">
-        <div class="text-center mb-8">
-            <h1 id="saludo" class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
-                Hola Familia 👋
-            </h1>
-            <p id="subtitulo" class="text-slate-400 mt-2">Tablero de organización</p>
+        <div class="flex gap-2 mb-6">
+            <input id="tareaInput" type="text" placeholder="Escribe algo..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
+            <button onclick="agregarTarea()" class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-bold">+</button>
         </div>
 
-        <div class="glass border border-slate-700 rounded-3xl p-6 shadow-2xl mb-6">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="bg-blue-500/20 p-2 rounded-lg text-blue-400">
-                    📌
-                </div>
-                <h2 class="font-semibold text-lg text-blue-300">Notas de hoy</h2>
-            </div>
-            
-            <div id="nota-container" class="bg-slate-800/50 rounded-2xl p-4 border border-slate-700/50">
-                <p id="mensaje" class="text-slate-200 leading-relaxed">
-                    Selecciona tu perfil para ver tus mensajes.
-                </p>
-            </div>
+        <div id="listaTareas" class="space-y-3">
+            <p class="text-center text-slate-500">Cargando notas...</p>
         </div>
-
-        <button onclick="location.reload()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl transition-all active:scale-95 shadow-lg shadow-blue-900/20">
-            🔄 Actualizar Tablero
-        </button>
-
-        <p class="text-center text-slate-600 text-xs mt-10 uppercase tracking-widest font-semibold">
-            Familia Aplicaciones v1.0
-        </p>
     </div>
 
     <script>
-        // Lógica para personalizar según el usuario en la URL (?u=mati)
-        const params = new URLSearchParams(window.location.search);
-        const u = params.get('u')?.toLowerCase();
-        
-        const elSaludo = document.getElementById('saludo');
-        const elMensaje = document.getElementById('mensaje');
-        const elSubtitulo = document.getElementById('subtitulo');
-
-        // Configuración de mensajes por persona
-        const familia = {
-            'mati': { 
-                nombre: 'Mati', 
-                msg: '¡A darle con todo a los proyectos hoy! No olvides revisar los commits pendientes.' 
-            },
-            'lis': { 
-                nombre: 'Lis', 
-                msg: '¡Hola Lis! Esperamos que tengas un día maravilloso y muy productivo. ❤️' 
-            },
-            'agus': { 
-                nombre: 'Agus', 
-                msg: '¡Hey Agus! Recuerda revisar tus tareas y dejar un tiempo para descansar.' 
-            },
-            'mia': { 
-                nombre: 'Mia', 
-                msg: '¡Hola peque! Recuerda que hoy es un gran día para aprender algo nuevo y jugar.' 
-            }
+        // CONFIGURACIÓN DE LA BASE DE DATOS (Pública para pruebas)
+        const firebaseConfig = {
+            databaseURL: "https://app-familia-mati-default-rtdb.firebaseio.com/"
         };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        if (familia[u]) {
-            elSaludo.innerText = `¡Hola ${familia[u].nombre}! 👋`;
-            elMensaje.innerText = familia[u].msg;
-            elSubtitulo.innerText = "Este es tu espacio personal";
+        // Detectar usuario de la URL
+        const u = new URLSearchParams(window.location.search).get('u')?.toLowerCase();
+        const nombres = {'mati':'Mati', 'lis':'Lis', 'agus':'Agus', 'mia':'Mia'};
+        if(u && nombres[u]) document.getElementById('saludo').innerText = 'Hola ' + nombres[u] + ' 👋';
+
+        // FUNCIÓN: Agregar tarea a la base de datos
+        function agregarTarea() {
+            const input = document.getElementById('tareaInput');
+            if (input.value.trim() === "") return;
+
+            db.ref('tareas').push({
+                texto: input.value,
+                autor: nombres[u] || 'Alguien',
+                fecha: Date.now()
+            });
+            input.value = "";
+        }
+
+        // FUNCIÓN: Leer tareas en tiempo real
+        db.ref('tareas').on('value', (snapshot) => {
+            const lista = document.getElementById('listaTareas');
+            lista.innerHTML = "";
+            const data = snapshot.val();
+
+            if (data) {
+                Object.keys(data).reverse().forEach(key => {
+                    const t = data[key];
+                    lista.innerHTML += `
+                        <div class="bg-slate-800 p-4 rounded-2xl flex justify-between items-center border border-slate-700 shadow-lg">
+                            <div>
+                                <p class="text-sm text-blue-400 font-bold">${t.autor}</p>
+                                <p class="text-slate-200">${t.texto}</p>
+                            </div>
+                            <button onclick="borrarTarea('${key}')" class="text-slate-500 hover:text-red-500 text-xl">✕</button>
+                        </div>
+                    `;
+                });
+            } else {
+                lista.innerHTML = '<p class="text-center text-slate-600">No hay notas pendientes.</p>';
+            }
+        });
+
+        // FUNCIÓN: Borrar tarea
+        function borrarTarea(id) {
+            db.ref('tareas/' + id).remove();
         }
     </script>
 </body>
