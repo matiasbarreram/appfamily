@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tablero Familiar</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #f0f0eb;
+            --card: #ffffff;
+            --primary: #1a1a2e;
+            --accent: #e84545;
+            --green: #2ecc71;
+            --yellow: #f39c12;
+            --blue: #3498db;
+            --purple: #9b59b6;
+            --text: #1a1a2e;
+            --muted: #aaa;
+            --border: #e4e4de;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            overscroll-behavior: none;
+        }
+
+        /* ── ACCESS DENIED ── */
+        #access-denied {
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center; min-height: 100vh; padding: 40px; text-align: center;
+        }
+        #access-denied .lock { font-size: 64px; margin-bottom: 16px; }
+        #access-denied h2 { font-size: 22px; font-weight: 900; color: var(--primary); }
+        #access-denied p { color: var(--muted); margin-top: 8px; font-size: 15px; font-weight: 600; }
+
+        /* ── MAIN APP ── */
+        #app { display: none; }
+
+        /* ── HEADER ── */
+        .header {
+            background: var(--primary);
+            padding: 16px 18px;
+            padding-top: calc(env(safe-area-inset-top, 0px) + 16px);
+            display: flex; align-items: center; gap: 13px;
+        }
+        .avatar {
+            width: 52px; height: 52px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .header-text { flex: 1; min-width: 0; }
+        .header-greeting { color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .header-name { color: white; font-size: 22px; font-weight: 900; line-height: 1.1; }
+
+        .btn-export-header {
+            background: rgba(255,255,255,0.12); border: none; border-radius: 12px;
+            padding: 10px 13px; color: white; font-family: 'Nunito', sans-serif;
+            font-size: 12px; font-weight: 800; cursor: pointer; flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .btn-export-header:active { background: rgba(255,255,255,0.22); }
+
+        /* ── STATS ── */
+        .stats {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            background: white; border-bottom: 1px solid var(--border);
+        }
+        .stat { padding: 12px 8px; text-align: center; border-right: 1px solid var(--border); }
+        .stat:last-child { border-right: none; }
+        .stat-n { font-size: 24px; font-weight: 900; color: var(--primary); line-height: 1; }
+        .stat-l { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+        /* ── FILTROS PERMANENTES ── */
+        .filtros-sticky {
+            position: sticky; top: 0; z-index: 50;
+            background: white; border-bottom: 2px solid var(--border);
+        }
+        .filtros-bloque { padding: 9px 14px; }
+        .filtros-label {
+            font-size: 10px; font-weight: 800; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px;
+        }
+        .chips-scroll {
+            display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
+        }
+        .chips-scroll::-webkit-scrollbar { display: none; }
+        .chip {
+            flex-shrink: 0; padding: 6px 13px; border-radius: 30px;
+            border: 1.5px solid var(--border); background: var(--bg);
+            font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
+            color: var(--muted); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+        }
+        .chip.active { border-color: var(--primary); background: var(--primary); color: white; }
+        .chip:active { transform: scale(0.93); }
+        .filtros-div { height: 1px; background: var(--border); }
+
+        /* ── SCROLL AREA ── */
+        .scroll-area {
+            overflow-y: auto; -webkit-overflow-scrolling: touch;
+            padding-bottom: 90px;
+        }
+
+        /* ── FAB ── */
+        .fab {
+            position: fixed;
+            bottom: calc(22px + var(--safe-bottom));
+            right: 20px; z-index: 60;
+            width: 60px; height: 60px; border-radius: 50%;
+            background: var(--accent); color: white;
+            border: none; font-size: 30px; cursor: pointer;
+            box-shadow: 0 6px 24px rgba(232,69,69,0.4);
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s;
+        }
+        .fab:active { transform: scale(0.88); }
+
+        /* ── BOTTOM SHEET (NUEVA TAREA) ── */
+        .sheet-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45); z-index: 70; align-items: flex-end;
+        }
+        .sheet-overlay.open { display: flex; }
+        .sheet {
+            background: white; border-radius: 24px 24px 0 0;
+            width: 100%; max-height: 92vh; overflow-y: auto;
+            padding-bottom: calc(20px + var(--safe-bottom));
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .sheet-top {
+            position: sticky; top: 0; background: white; z-index: 1;
+            padding: 14px 18px 10px;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+        .sheet-handle { width: 38px; height: 4px; background: var(--border); border-radius: 4px; }
+        .sheet-close-btn {
+            background: #f5f5f5; border: none; border-radius: 50%;
+            width: 32px; height: 32px; font-size: 16px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; color: var(--muted);
+        }
+        .sheet-title { font-size: 17px; font-weight: 900; color: var(--primary); padding: 14px 18px 6px; }
+        .form-body { padding: 6px 18px 0; display: grid; gap: 14px; }
+        label { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; display: block; margin-bottom: 5px; }
+        select, input[type="text"], input[type="date"] {
+            width: 100%; padding: 14px 15px;
+            border: 2px solid var(--border); border-radius: 12px;
+            font-family: 'Nunito', sans-serif; font-size: 16px;
+            font-weight: 600; color: var(--text); outline: none;
+            background: #fafafa; -webkit-appearance: none; transition: border-color 0.2s;
+        }
+        select:focus, input:focus { border-color: var(--primary); background: white; }
+        input[type="date"] { color: var(--primary); font-weight: 700; cursor: pointer; }
+        .date-hint {
+            font-size: 12px; color: var(--accent); font-weight: 700;
+            min-height: 18px; margin-top: -8px; padding-left: 4px;
+        }
+        .btn-publicar {
+            background: var(--primary); color: white; border: none;
+            padding: 16px; border-radius: 14px; width: 100%;
+            font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 900;
+            cursor: pointer; box-shadow: 0 4px 16px rgba(26,26,46,0.25);
+        }
+        .btn-publicar:active { transform: scale(0.97); }
+
+        /* ── TABLERO ── */
+        .tablero-wrap { padding: 12px 14px; display: grid; gap: 10px; }
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-icon { font-size: 48px; opacity: 0.3; margin-bottom: 10px; }
+        .empty-txt { font-size: 15px; color: var(--muted); font-weight: 700; }
+
+        /* ── NOTA ── */
+        .nota {
+            background: white; border-radius: 16px;
+            overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            animation: fadeIn 0.25s ease;
+        }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .nota-top { display: flex; align-items: center; gap: 10px; padding: 12px 14px 8px; }
+        .nota-icono { font-size: 26px; flex-shrink: 0; }
+        .nota-info { flex: 1; min-width: 0; }
+        .nota-cat { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; }
+        .nota-autor-line { font-size: 11px; font-weight: 700; margin-top: 1px; }
+        .nota-contenido { padding: 2px 14px 12px; font-size: 17px; font-weight: 700; color: var(--text); line-height: 1.35; }
+        .nota-footer {
+            padding: 9px 14px; display: flex; align-items: center;
+            justify-content: space-between; border-top: 1px solid var(--border); background: #fafaf8;
+        }
+        .fecha-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 700; background: var(--bg); color: var(--muted);
+        }
+        .fecha-badge.hoy     { background: #fff3cd; color: #a0690a; }
+        .fecha-badge.vencido { background: #ffe0e0; color: var(--accent); }
+        .fecha-badge.pronto  { background: #fff8e1; color: #d68910; }
+        .btn-borrar {
+            width: 34px; height: 34px; border-radius: 10px; border: none;
+            background: #fff0f0; font-size: 16px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .btn-borrar:active { transform: scale(0.88); }
+
+        /* Colores por categoría */
+        .cat-compras      { border-top: 3px solid var(--accent); }
+        .cat-compras      .nota-cat { color: var(--accent); }
+        .cat-limpieza     { border-top: 3px solid var(--green); }
+        .cat-limpieza     .nota-cat { color: var(--green); }
+        .cat-reparaciones { border-top: 3px solid #e67e22; }
+        .cat-reparaciones .nota-cat { color: #e67e22; }
+        .cat-comida        { border-top: 3px solid #e91e8c; }
+        .cat-comida        .nota-cat { color: #e91e8c; }
+        .cat-mascotas     { border-top: 3px solid var(--purple); }
+        .cat-mascotas     .nota-cat { color: var(--purple); }
+        .cat-colegio      { border-top: 3px solid var(--blue); }
+        .cat-colegio      .nota-cat { color: var(--blue); }
+        .cat-recordatorio { border-top: 3px solid var(--yellow); }
+        .cat-recordatorio .nota-cat { color: var(--yellow); }
+
+        /* ── MODAL EXPORT ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 80; align-items: flex-end;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: white; border-radius: 24px 24px 0 0;
+            width: 100%; padding: 20px 18px calc(24px + var(--safe-bottom));
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 88vh; overflow-y: auto;
+        }
+        .modal-handle { width: 38px; height: 4px; background: var(--border); border-radius: 4px; margin: 0 auto 16px; }
+        .modal-title { font-size: 18px; font-weight: 900; color: var(--primary); margin-bottom: 4px; }
+        .modal-sub { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 14px; }
+
+        .export-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+        .export-tab {
+            flex: 1; padding: 10px; border-radius: 10px; border: 2px solid var(--border);
+            background: var(--bg); font-family: 'Nunito', sans-serif;
+            font-size: 13px; font-weight: 800; color: var(--muted); cursor: pointer;
+        }
+        .export-tab.active { border-color: var(--primary); background: var(--primary); color: white; }
+
+        .export-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 0; border-bottom: 1px solid var(--border);
+        }
+        .export-item:last-child { border-bottom: none; }
+        .export-icon { font-size: 20px; flex-shrink: 0; }
+        .export-texto { flex: 1; font-size: 15px; font-weight: 700; color: var(--text); }
+        .export-meta { font-size: 11px; color: var(--muted); font-weight: 600; text-align: right; }
+        .export-empty { text-align: center; padding: 30px; color: var(--muted); font-weight: 700; }
+
+        .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+        .btn-modal {
+            padding: 14px; border-radius: 14px; border: none;
+            font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800;
+            cursor: pointer;
+        }
+        .btn-modal:active { transform: scale(0.96); }
+        .btn-modal.primary   { background: var(--primary); color: white; }
+        .btn-modal.whatsapp  { background: #25D366; color: white; }
+        .btn-modal.secondary { background: var(--bg); color: var(--text); border: 2px solid var(--border); }
+    </style>
+</head>
+<body>
+
+<div id="access-denied">
+    <div class="lock">🔒</div>
+    <h2>Acceso privado</h2>
+    <p>Pedí tu link personal a la familia 😊</p>
+</div>
+
+<div id="app">
+    <div class="header">
+        <div class="avatar" id="avatar">❓</div>
+        <div class="header-text">
+            <div class="header-greeting">Hola 👋</div>
+            <div class="header-name" id="header-name">—</div>
+        </div>
+        <button class="btn-export-header" onclick="abrirExport()">📤 Exportar</button>
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-n" id="stat-total">0</div>
+            <div class="stat-l">Total</div>
+        </div>
+        <div class="stat">
+            <div class="stat-n" id="stat-hoy" style="color:var(--accent)">0</div>
+            <div class="stat-l">Vence Hoy</div>
+        </div>
+        <div class="stat">
+            <div class="stat-n" id="stat-compras" style="color:var(--blue)">0</div>
+            <div class="stat-l">Compras</div>
+        </div>
+    </div>
+
+    <div class="filtros-sticky">
+        <div class="filtros-bloque">
+            <div class="filtros-label">Categoría</div>
+            <div class="chips-scroll" id="chips-cat">
+                <button class="chip active" onclick="setFiltro('cat','todas',this)">Todas</button>
+                <button class="chip" onclick="setFiltro('cat','compras',this)">🛒 Compras</button>
+                <button class="chip" onclick="setFiltro('cat','limpieza',this)">🧹 Casa</button>
+                <button class="chip" onclick="setFiltro('cat','reparaciones',this)">🛠️ Reparac.</button>
+                <button class="chip" onclick="setFiltro('cat','comida',this)">🍎 Comida</button>
+                <button class="chip" onclick="setFiltro('cat','mascotas',this)">🐶 Mascotas</button>
+                <button class="chip" onclick="setFiltro('cat','colegio',this)">🎒 Colegio</button>
+                <button class="chip" onclick="setFiltro('cat','recordatorio',this)">💡 Recuerdo</button>
+            </div>
+        </div>
+        <div class="filtros-div"></div>
+        <div class="filtros-bloque" style="padding-top:8px;padding-bottom:10px;">
+            <div class="filtros-label">Persona</div>
+            <div class="chips-scroll" id="chips-user">
+                <button class="chip active" onclick="setFiltro('user','todos',this)">Todos</button>
+                <button class="chip" onclick="setFiltro('user','mati',this)">👨🏻‍💻 Mati</button>
+                <button class="chip" onclick="setFiltro('user','lis',this)">👩🏻‍🍳 Lis</button>
+                <button class="chip" onclick="setFiltro('user','agus',this)">👧🏻 Agus</button>
+                <button class="chip" onclick="setFiltro('user','mia',this)">👩🏻‍🎓 Mia</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="scroll-area">
+        <div class="tablero-wrap" id="tablero"></div>
+    </div>
+
+    <button class="fab" onclick="abrirSheet()">＋</button>
+</div>
+
+<div class="sheet-overlay" id="sheet-overlay" onclick="cerrarSheetOverlay(event)">
+    <div class="sheet">
+        <div class="sheet-top">
+            <div class="sheet-handle"></div>
+            <button class="sheet-close-btn" onclick="cerrarSheet()">✕</button>
+        </div>
+        <div class="sheet-title">Nueva Tarea</div>
+        <div class="form-body">
+            <div>
+                <label>Categoría</label>
+                <select id="icono">
+                    <option value="🛒|compras">🛒 Compras del Super</option>
+                    <option value="🧹|limpieza">🧹 Limpieza / Casa</option>
+                    <option value="🛠️|reparaciones">🛠️ Reparaciones</option>
+                    <option value="🍎|comida">🍎 Comida / Cocina</option>
+                    <option value="🐶|mascotas">🐶 Mascotas</option>
+                    <option value="🎒|colegio">🎒 Colegio</option>
+                    <option value="💡|recordatorio">💡 Recordatorio</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Descripción</label>
+                <input type="text" id="texto" placeholder="Ej: Comprar leche, arreglar luz...">
+            </div>
+
+            <div>
+                <label>Fecha límite (opcional)</label>
+                <input type="date" id="fechaCompromiso" onchange
