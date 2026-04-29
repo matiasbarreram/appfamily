@@ -1,21 +1,25 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Tablero Familiar</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #1a202c; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: screen; margin: 0; height: 100vh; }
+        .card { background: #2d3748; padding: 2rem; rounded: 1rem; border: 1px solid #4a5568; text-align: center; border-radius: 20px; }
+        h1 { color: #63b3ed; }
+    </style>
 </head>
-<body class="bg-slate-900 text-white flex items-center justify-center min-h-screen">
-    <div class="bg-slate-800 p-10 rounded-3xl shadow-xl border border-slate-700 text-center">
-        <h1 id="saludo" class="text-4xl font-bold text-blue-400 mb-4">Hola Familia 👋</h1>
-        <p id="mensaje" class="text-slate-300">Cargando tablero...</p>
+<body>
+    <div class="card">
+        <h1 id="saludo">Hola Familia 👋</h1>
+        <p id="mensaje">Tu tablero está activo.</p>
     </div>
     <script>
-        const u = new URLSearchParams(window.location.search).get('u');
+        const params = new URLSearchParams(window.location.search);
+        const u = params.get('u');
         const nombres = {'mati':'Mati', 'lis':'Lis', 'agus':'Agus', 'mia':'Mia'};
         if(u && nombres[u.toLowerCase()]) {
             document.getElementById('saludo').innerText = 'Hola ' + nombres[u.toLowerCase()] + ' 👋';
-            document.getElementById('mensaje').innerText = '¡Tu tablero está listo!';
         }
     </script>
 </body>
