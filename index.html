@@ -4,235 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tablero Familiar</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#1a1a2e">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f0f0eb;
-            --primary: #1a1a2e;
-            --accent: #e84545;
-            --green: #2ecc71;
-            --yellow: #f39c12;
-            --blue: #3498db;
-            --purple: #9b59b6;
-            --text: #1a1a2e;
-            --muted: #aaa;
-            --border: #e4e4de;
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --bg: #f0f0eb; --primary: #1a1a2e; --accent: #e84545;
+            --green: #2ecc71; --blue: #3498db; --yellow: #f39c12;
+            --purple: #9b59b6; --border: #e4e4de;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: 'Nunito', sans-serif;
-            background: var(--bg);
-            min-height: 100vh;
-            overscroll-behavior: none;
-        }
-
-        /* ── ACCESS DENIED ── */
-        #access-denied {
-            display: none; flex-direction: column; align-items: center;
-            justify-content: center; min-height: 100vh; padding: 40px; text-align: center;
-        }
-        #access-denied .lock { font-size: 64px; margin-bottom: 16px; }
-        #access-denied h2 { font-size: 22px; font-weight: 900; color: var(--primary); }
-        #access-denied p { color: var(--muted); margin-top: 8px; font-size: 15px; font-weight: 600; }
-
-        #app { display: none; }
-
-        /* ── HEADER ── */
-        .header {
-            background: var(--primary);
-            padding: 16px 18px;
-            padding-top: calc(env(safe-area-inset-top, 0px) + 16px);
-            display: flex; align-items: center; gap: 13px;
-        }
-        .avatar {
-            width: 52px; height: 52px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.2);
-        }
-        .header-text { flex: 1; min-width: 0; }
-        .header-greeting { color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        .header-name { color: white; font-size: 22px; font-weight: 900; line-height: 1.1; }
-        .btn-export-header {
-            background: rgba(255,255,255,0.12); border: none; border-radius: 12px;
-            padding: 10px 13px; color: white; font-family: 'Nunito', sans-serif;
-            font-size: 12px; font-weight: 800; cursor: pointer; flex-shrink: 0;
-        }
-
-        /* ── STATS ── */
-        .stats {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            background: white; border-bottom: 1px solid var(--border);
-        }
-        .stat { padding: 12px 8px; text-align: center; border-right: 1px solid var(--border); }
-        .stat:last-child { border-right: none; }
-        .stat-n { font-size: 24px; font-weight: 900; color: var(--primary); line-height: 1; }
-        .stat-l { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
-
-        /* ── FILTROS STICKY ── */
-        .filtros-sticky {
-            position: sticky; top: 0; z-index: 50;
-            background: white; border-bottom: 2px solid var(--border);
-        }
-        .filtros-bloque { padding: 9px 14px; }
-        .filtros-label { font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; }
-        .chips-scroll {
-            display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px;
-            -webkit-overflow-scrolling: touch; scrollbar-width: none;
-        }
-        .chip {
-            flex-shrink: 0; padding: 6px 13px; border-radius: 30px;
-            border: 1.5px solid var(--border); background: var(--bg);
-            font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
-            color: var(--muted); cursor: pointer; transition: all 0.15s; white-space: nowrap;
-        }
-        .chip.active { border-color: var(--primary); background: var(--primary); color: white; }
-
-        /* ── NOTAS ── */
-        .tablero-wrap { padding: 12px 14px; display: grid; gap: 10px; padding-bottom: 100px; }
-        .nota {
-            background: white; border-radius: 16px;
-            overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            animation: fadeIn 0.25s ease;
-        }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-        .nota-top { display: flex; align-items: center; gap: 10px; padding: 12px 14px 8px; }
-        .nota-icono { font-size: 26px; flex-shrink: 0; }
-        .nota-info { flex: 1; min-width: 0; }
-        .nota-cat { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; }
-        .nota-autor-line { font-size: 11px; font-weight: 700; margin-top: 1px; }
-        .nota-contenido { padding: 2px 14px 12px; font-size: 17px; font-weight: 700; color: var(--text); line-height: 1.35; }
-        .nota-footer {
-            padding: 9px 14px; display: flex; align-items: center;
-            justify-content: space-between; border-top: 1px solid var(--border); background: #fafaf8;
-        }
+        body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--primary); min-height: 100vh; }
         
-        /* Colores por Categoría */
-        .cat-compras { border-top: 4px solid var(--accent); }
-        .cat-limpieza { border-top: 4px solid var(--green); }
-        .cat-reparaciones { border-top: 4px solid #e67e22; }
-        .cat-comida { border-top: 4px solid #e91e8c; }
-        .cat-mascotas { border-top: 4px solid var(--purple); }
-        .cat-colegio { border-top: 4px solid var(--blue); }
-        .cat-recordatorio { border-top: 4px solid var(--yellow); }
-        .cat-sin { border-top: 4px solid #ccc; }
+        /* AUTH & HEADER */
+        #access-denied { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
+        #app { display: none; }
+        .header { background: var(--primary); padding: 20px; display: flex; align-items: center; gap: 15px; color: white; }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 25px; background: rgba(255,255,255,0.2); }
+        .btn-export-header { background: #e84545; border: none; border-radius: 10px; padding: 8px 12px; color: white; font-weight: 800; font-size: 12px; cursor: pointer; margin-left: auto; }
 
-        /* ── FAB & SHEETS ── */
-        .fab {
-            position: fixed; bottom: calc(22px + var(--safe-bottom));
-            right: 20px; z-index: 60; width: 60px; height: 60px; border-radius: 50%;
-            background: var(--accent); color: white; border: none; font-size: 30px;
-            box-shadow: 0 6px 24px rgba(232,69,69,0.4); display: flex; align-items: center; justify-content: center;
-        }
+        /* STATS & FILTERS */
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); background: white; border-bottom: 1px solid var(--border); }
+        .stat { padding: 10px; text-align: center; border-right: 1px solid var(--border); }
+        .stat-n { font-size: 20px; font-weight: 900; }
+        .stat-l { font-size: 10px; color: #888; text-transform: uppercase; }
+        
+        .filtros { background: white; padding: 10px; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
+        .chips { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; scrollbar-width: none; }
+        .chip { flex-shrink: 0; padding: 8px 15px; border-radius: 20px; border: 1px solid var(--border); background: #f9f9f9; font-weight: 700; font-size: 13px; }
+        .chip.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .sheet-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.45); z-index: 70; align-items: flex-end;
-        }
-        .sheet-overlay.open { display: flex; }
-        .sheet {
-            background: white; border-radius: 24px 24px 0 0; width: 100%;
-            padding: 20px; padding-bottom: calc(20px + var(--safe-bottom));
-            animation: slideUp 0.3s ease-out;
-        }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        /* NOTAS */
+        .tablero { padding: 15px; display: grid; gap: 12px; padding-bottom: 100px; }
+        .nota { background: white; border-radius: 15px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-top: 5px solid #ccc; }
+        .nota.cat-compras { border-top-color: var(--accent); }
+        .nota.cat-limpieza { border-top-color: var(--green); }
+        .nota.cat-comida { border-top-color: #e91e8c; }
+        .nota-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .nota-cat { font-size: 10px; font-weight: 900; color: #888; text-transform: uppercase; }
+        .nota-user { font-size: 11px; font-weight: 700; }
+        .nota-txt { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+        .nota-foot { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 10px; }
+        .btn-borrar { background: #ffebeb; border: none; padding: 8px; border-radius: 8px; cursor: pointer; }
 
-        .btn-publicar {
-            background: var(--primary); color: white; border: none; padding: 16px;
-            border-radius: 14px; width: 100%; font-weight: 900; margin-top: 15px;
-        }
-
-        .fecha-badge {
-            padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
-            background: var(--bg); color: var(--muted);
-        }
-        .fecha-badge.hoy { background: #fff3cd; color: #a0690a; }
-        .fecha-badge.vencido { background: #ffe0e0; color: var(--accent); }
-
-        .btn-borrar {
-            width: 34px; height: 34px; border-radius: 10px; border: none;
-            background: #fff0f0; font-size: 16px; cursor: pointer;
-        }
+        /* FAB & MODALS */
+        .fab { position: fixed; bottom: 25px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--accent); color: white; border: none; font-size: 30px; box-shadow: 0 5px 15px rgba(232,69,69,0.3); }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: flex-end; }
+        .modal.open { display: flex; }
+        .modal-content { background: white; width: 100%; border-radius: 20px 20px 0 0; padding: 20px; max-height: 90vh; overflow-y: auto; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; font-family: inherit; font-size: 16px; }
+        .btn-main { background: var(--primary); color: white; border: none; width: 100%; padding: 15px; border-radius: 10px; font-weight: 800; font-size: 16px; margin-top: 10px; }
+        
+        /* EXPORT MODAL */
+        .export-item { padding: 10px 0; border-bottom: 1px solid #eee; display: flex; gap: 10px; }
+        .export-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .tab-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #ddd; font-weight: 800; background: #f0f0f0; }
+        .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
     </style>
 </head>
 <body>
 
-<div id="access-denied">
-    <div class="lock">🔒</div>
-    <h2>Acceso privado</h2>
-    <p>Pedí tu link personal a la familia 😊</p>
-</div>
+<div id="access-denied"><h2>🔒 Acceso Privado</h2><p>Usa tu link personal</p></div>
 
 <div id="app">
     <div class="header">
-        <div class="avatar" id="avatar">❓</div>
-        <div class="header-text">
-            <div class="header-greeting">Hola 👋</div>
-            <div class="header-name" id="header-name">—</div>
+        <div class="avatar" id="avatar">?</div>
+        <div>
+            <div style="font-size: 12px; opacity: 0.7;">HOLA 👋</div>
+            <div id="header-name" style="font-size: 20px; font-weight: 900;">Cargando...</div>
         </div>
-        <button class="btn-export-header" onclick="abrirExport()">📤 Exportar</button>
+        <button class="btn-export-header" onclick="abrirExport()">📤 LISTA</button>
     </div>
 
     <div class="stats">
-        <div class="stat">
-            <div class="stat-n" id="stat-total">0</div>
-            <div class="stat-l">Total</div>
-        </div>
-        <div class="stat">
-            <div class="stat-n" id="stat-hoy" style="color:var(--accent)">0</div>
-            <div class="stat-l">Hoy</div>
-        </div>
-        <div class="stat">
-            <div class="stat-n" id="stat-compras" style="color:var(--blue)">0</div>
-            <div class="stat-l">Compras</div>
+        <div class="stat"><div class="stat-n" id="s-total">0</div><div class="stat-l">Total</div></div>
+        <div class="stat"><div class="stat-n" id="s-compras" style="color:var(--accent)">0</div><div class="stat-l">Súper</div></div>
+        <div class="stat"><div class="stat-n" id="s-hoy">0</div><div class="stat-l">Hoy</div></div>
+    </div>
+
+    <div class="filtros">
+        <div class="chips" id="chips-cat">
+            <button class="chip active" onclick="filtrar('todas', this)">Todas</button>
+            <button class="chip" onclick="filtrar('compras', this)">🛒 Súper</button>
+            <button class="chip" onclick="filtrar('limpieza', this)">🧹 Casa</button>
+            <button class="chip" onclick="filtrar('comida', this)">🍎 Comida</button>
         </div>
     </div>
 
-    <div class="filtros-sticky">
-        <div class="filtros-bloque">
-            <div class="filtros-label">Filtrar por Categoría</div>
-            <div class="chips-scroll" id="chips-cat">
-                <button class="chip active" onclick="setFiltro('cat','todas',this)">Todas</button>
-                <button class="chip" onclick="setFiltro('cat','compras',this)">🛒 Compras</button>
-                <button class="chip" onclick="setFiltro('cat','limpieza',this)">🧹 Casa</button>
-                <button class="chip" onclick="setFiltro('cat','reparaciones',this)">🛠️ Reparac.</button>
-                <button class="chip" onclick="setFiltro('cat','comida',this)">🍎 Comida</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="tablero" class="tablero-wrap"></div>
-
-    <button class="fab" onclick="abrirSheet()">＋</button>
+    <div id="tablero" class="tablero"></div>
+    <button class="fab" onclick="abrirModal('modal-tarea')">＋</button>
 </div>
 
-<div class="sheet-overlay" id="sheet-overlay">
-    <div class="sheet">
-        <h3 style="margin-bottom:15px">Nueva Tarea</h3>
-        <label style="font-size:12px; font-weight:800; color:gray">CATEGORÍA</label>
-        <select id="icono" style="width:100%; padding:12px; margin-bottom:15px; border-radius:8px">
-            <option value="🛒|compras">🛒 Compras</option>
-            <option value="🧹|limpieza">🧹 Limpieza</option>
-            <option value="🛠️|reparaciones">🛠️ Reparaciones</option>
-            <option value="🍎|comida">🍎 Comida</option>
+<div class="modal" id="modal-tarea">
+    <div class="modal-content">
+        <h2 style="margin-bottom:10px">Nueva Nota</h2>
+        <select id="f-cat">
+            <option value="🛒|compras">🛒 Compras del Super</option>
+            <option value="🧹|limpieza">🧹 Limpieza / Casa</option>
+            <option value="🍎|comida">🍎 Comida / Cocina</option>
             <option value="💡|recordatorio">💡 Recordatorio</option>
         </select>
-        
-        <label style="font-size:12px; font-weight:800; color:gray">¿QUÉ HAY QUE HACER?</label>
-        <input type="text" id="texto" placeholder="Ej: Comprar pan..." style="width:100%; padding:12px; margin-bottom:15px; border-radius:8px; border:1px solid #ccc">
-        
-        <label style="font-size:12px; font-weight:800; color:gray">FECHA LÍMITE</label>
-        <input type="date" id="fechaCompromiso" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc">
-        
-        <button class="btn-publicar" onclick="guardar()">🚀 Publicar en el Tablero</button>
-        <button onclick="cerrarSheet()" style="width:100%; background:none; border:none; margin-top:10px; color:gray; font-weight:bold">Cancelar</button>
+        <input type="text" id="f-txt" placeholder="¿Qué hay que hacer?">
+        <input type="date" id="f-fecha">
+        <button class="btn-main" onclick="guardar()">🚀 Publicar</button>
+        <button onclick="cerrarModal('modal-tarea')" style="width:100%; border:none; background:none; margin-top:15px; color:gray">Cerrar</button>
+    </div>
+</div>
+
+<div class="modal" id="modal-export">
+    <div class="modal-content">
+        <h2>📤 Exportar Lista</h2>
+        <div class="export-tabs">
+            <button class="tab-btn active" id="btn-t-compras" onclick="setExportTab('compras')">Solo Súper</button>
+            <button class="tab-btn" id="btn-t-todo" onclick="setExportTab('todo')">Todo</button>
+        </div>
+        <div id="export-lista" style="margin-bottom:20px"></div>
+        <button class="btn-main" style="background:#25D366" onclick="enviarWhatsApp()">💬 Enviar por WhatsApp</button>
+        <button onclick="cerrarModal('modal-export')" style="width:100%; border:none; background:none; margin-top:15px; color:gray">Cerrar</button>
     </div>
 </div>
 
@@ -240,7 +126,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // Configuración Firebase (Mantenida)
     const firebaseConfig = {
         apiKey: "AIzaSyDG6icP-ZCbtMouvxb90OwI1cmse56fnjs",
         authDomain: "app-family-notas.firebaseapp.com",
@@ -251,72 +136,117 @@
         appId: "1:1043185917487:web:5ec89f80b6f726e99270da"
     };
 
-    const firebaseApp = initializeApp(firebaseConfig);
-    const db = getDatabase(firebaseApp);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
     const perfiles = {
-        'mati': { nombre: 'Mati', emoji: '👨🏻‍💻', color: '#dfe6fd' },
-        'lis':  { nombre: 'Lis',  emoji: '👩🏻‍🍳', color: '#fde8f0' },
-        'agus': { nombre: 'Agus', emoji: '👧🏻',   color: '#ede8fd' },
-        'mia':  { nombre: 'Mia',  emoji: '👩🏻‍🎓', color: '#e2fde8' }
+        'mati': { n: 'Mati', e: '👨🏻‍💻', c: '#dfe6fd' },
+        'lis':  { n: 'Lis',  e: '👩🏻‍🍳', c: '#fde8f0' },
+        'agus': { n: 'Agus', e: '👧🏻',  c: '#ede8fd' },
+        'mia':  { n: 'Mia',  e: '👩🏻‍🎓', c: '#e2fde8' }
     };
 
-    const catLabels = {
-        compras: 'Compras', limpieza: 'Casa', reparaciones: 'Reparaciones',
-        comida: 'Comida', mascotas: 'Mascotas', colegio: 'Colegio', recordatorio: 'Recordatorio'
-    };
-
-    // --- AUTH ---
-    const rawParam = new URLSearchParams(window.location.search).get('u') || '';
-    const userKey = rawParam.toLowerCase().trim();
-
-    if (userKey && perfiles[userKey]) {
+    const userKey = (new URLSearchParams(window.location.search).get('u') || '').toLowerCase();
+    if (perfiles[userKey]) {
         document.getElementById("app").style.display = "block";
-        document.getElementById("header-name").innerText = perfiles[userKey].nombre;
-        document.getElementById("avatar").innerText = perfiles[userKey].emoji;
-        document.getElementById("avatar").style.backgroundColor = perfiles[userKey].color;
+        document.getElementById("header-name").innerText = perfiles[userKey].n;
+        document.getElementById("avatar").innerText = perfiles[userKey].e;
+        document.getElementById("avatar").style.backgroundColor = perfiles[userKey].c;
     } else {
         document.getElementById("access-denied").style.display = "flex";
     }
 
-    // --- LOGICA ---
-    let todasLasNotas = [];
-    let filtros = { cat: 'todas' };
+    let notas = [];
+    let filtroCat = 'todas';
+    let exportTab = 'compras';
 
-    onValue(ref(db, 'pendientes'), (snapshot) => {
-        const data = snapshot.val();
-        todasLasNotas = [];
-        if (data) {
-            Object.keys(data).forEach(key => {
-                todasLasNotas.push({ key, ...data[key] });
-            });
-        }
-        renderNotas();
+    onValue(ref(db, 'pendientes'), (s) => {
+        const d = s.val();
+        notas = d ? Object.keys(d).map(k => ({ id: k, ...d[k] })) : [];
+        render();
     });
 
-    window.setFiltro = function(tipo, val, btn) {
-        filtros[tipo] = val;
-        document.querySelectorAll(`.chips-scroll .chip`).forEach(c => c.classList.remove('active'));
+    window.filtrar = (c, btn) => {
+        filtroCat = c;
+        document.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        renderNotas();
+        render();
     };
 
-    function renderNotas() {
-        const tablero = document.getElementById("tablero");
-        const filtradas = todasLasNotas.filter(n => filtros.cat === 'todas' || n.categoria === filtros.cat);
+    function render() {
+        const tab = document.getElementById("tablero");
+        const filtradas = notas.filter(n => filtroCat === 'todas' || n.categoria === filtroCat);
+        
+        document.getElementById('s-total').innerText = notas.length;
+        document.getElementById('s-compras').innerText = notas.filter(n => n.categoria === 'compras').length;
 
-        // Actualizar Stats
-        document.getElementById('stat-total').innerText = todasLasNotas.length;
-        document.getElementById('stat-compras').innerText = todasLasNotas.filter(n => n.categoria === 'compras').length;
+        tab.innerHTML = filtradas.map(n => {
+            const p = perfiles[n.autor] || { n: n.autor, e: '👤' };
+            return `
+            <div class="nota cat-${n.categoria}">
+                <div class="nota-top">
+                    <span style="font-size:20px">${n.icono || '📌'}</span>
+                    <div style="flex:1">
+                        <div class="nota-cat">${n.categoria || 'Nota'}</div>
+                        <div class="nota-user">${p.e} ${p.n}</div>
+                    </div>
+                </div>
+                <div class="nota-txt">${n.contenido || ''}</div>
+                <div class="nota-foot">
+                    <span style="font-size:11px; color:gray">${n.limite ? '📅 '+n.limite : ''}</span>
+                    <button class="btn-borrar" onclick="borrar('${n.id}')">🗑️ Completada</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
 
-        if (filtradas.length === 0) {
-            tablero.innerHTML = `<p style="text-align:center; padding:40px; color:gray">No hay tareas pendientes aquí.</p>`;
-            return;
-        }
+    window.guardar = () => {
+        const txt = document.getElementById("f-txt").value.trim();
+        if(!txt) return;
+        const [ico, cat] = document.getElementById("f-cat").value.split('|');
+        push(ref(db, 'pendientes'), {
+            autor: userKey, contenido: txt, icono: ico, categoria: cat,
+            creado: new Date().toISOString(), limite: document.getElementById("f-fecha").value || null
+        });
+        cerrarModal('modal-tarea');
+        document.getElementById("f-txt").value = "";
+    };
 
-        tablero.innerHTML = filtradas.map(n => {
-            const autorKey = (n.autor || 'mati').toLowerCase();
-            const p = perfiles[autorKey] || { nombre: n.autor || 'Alguien', emoji: '👤' };
-            const catClass = n.categoria ? `cat-${n.categoria}` : 'cat-sin';
-            
-            // Formatear fecha de creación (Evita el "undefined")
+    window.borrar = (id) => { if(confirm("¿Completada?")) remove(ref(db, 'pendientes/'+id)); };
+    
+    // EXPORT LOGIC
+    window.abrirExport = () => {
+        abrirModal('modal-export');
+        renderExport();
+    };
+
+    window.setExportTab = (t) => {
+        exportTab = t;
+        document.getElementById('btn-t-compras').classList.toggle('active', t === 'compras');
+        document.getElementById('btn-t-todo').classList.toggle('active', t === 'todo');
+        renderExport();
+    };
+
+    function renderExport() {
+        const lista = document.getElementById('export-lista');
+        const items = exportTab === 'compras' ? notas.filter(n => n.categoria === 'compras') : notas;
+        lista.innerHTML = items.length ? items.map(n => `
+            <div class="export-item">
+                <span>${n.icono || '📌'}</span>
+                <span style="flex:1; font-weight:700">${n.contenido}</span>
+                <span style="font-size:11px; color:gray">${perfiles[n.autor]?.n || n.autor}</span>
+            </div>`).join('') : '<p style="text-align:center;color:gray">No hay nada para exportar</p>';
+    }
+
+    window.enviarWhatsApp = () => {
+        const items = exportTab === 'compras' ? notas.filter(n => n.categoria === 'compras') : notas;
+        let msg = exportTab === 'compras' ? "*🛒 LISTA DEL SÚPER*\n" : "*📋 TABLERO FAMILIAR*\n";
+        items.forEach((n, i) => msg += `${i+1}. ${n.icono} ${n.contenido} (${perfiles[n.autor]?.n || n.autor})\n`);
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    };
+
+    window.abrirModal = (id) => document.getElementById(id).classList.add('open');
+    window.cerrarModal = (id) => document.getElementById(id).classList.remove('open');
+</script>
+</body>
+</html>
