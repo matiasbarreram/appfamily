@@ -6,86 +6,394 @@
     <title>Casa 🏠</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* MANTENGO TUS RAÍCES Y ESTILOS EXACTOS */
         :root {
-            --bg: #F5F4F0; --card: #FFFFFF; --primary: #1C1C2E; --accent: #FF4757;
-            --text: #1C1C2E; --muted: #9A9A9A; --border: #EBEBEB;
-            --cat-super: #FF4757; --cat-casa: #2ED573; --cat-comida: #FF6B81;
-            --cat-colegio: #5352ED; --cat-medico: #1E90FF; --cat-pagos: #FFA502;
-            --cat-mascota: #A29BFE; --cat-trabajo: #636E72; --cat-eventos: #FDCB6E;
-            --cat-urgente: #FF2D55; --cat-panoramas:#00CEC9;
-            --u-mati: #4A90E2; --u-lis: #E84393; --u-agus: #9B59B6; --u-mia: #2ECC71;
-            --radius: 18px; --shadow: 0 4px 20px rgba(0,0,0,0.07);
+            --bg: #F5F4F0;
+            --card: #FFFFFF;
+            --primary: #1C1C2E;
+            --accent: #FF4757;
+            --text: #1C1C2E;
+            --muted: #9A9A9A;
+            --border: #EBEBEB;
+
+            --cat-super:    #FF4757;
+            --cat-casa:     #2ED573;
+            --cat-comida:   #FF6B81;
+            --cat-colegio:  #5352ED;
+            --cat-medico:   #1E90FF;
+            --cat-pagos:    #FFA502;
+            --cat-mascota:  #A29BFE;
+            --cat-trabajo:  #636E72;
+            --cat-eventos:  #FDCB6E;
+            --cat-urgente:  #FF2D55;
+            --cat-panoramas:#00CEC9;
+
+            --u-mati:  #4A90E2;
+            --u-lis:   #E84393;
+            --u-agus:  #9B59B6;
+            --u-mia:   #2ECC71;
+
+            --radius: 18px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.07);
         }
 
-        /* [TODOS TUS ESTILOS ORIGINALES SE MANTIENEN IGUAL] */
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overscroll-behavior: none; }
-        #access-denied { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; gap: 10px; background: var(--primary); color: white; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overscroll-behavior: none;
+        }
+
+        /* ── ACCESS DENIED ── */
+        #access-denied {
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center; height: 100vh; text-align: center; gap: 10px;
+            background: var(--primary);
+        }
+        #access-denied h2 { font-size: 2rem; color: white; }
+        #access-denied p { color: rgba(255,255,255,0.6); font-size: 1rem; }
+
+        /* ── APP SHELL ── */
         #app { display: none; }
 
-        /* HEADER */
-        .header { background: var(--primary); padding: 18px 16px 14px; display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; border: 2px solid rgba(255,255,255,0.15); }
+        /* ── HEADER ── */
+        .header {
+            background: var(--primary);
+            padding: 18px 16px 14px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .avatar {
+            width: 46px; height: 46px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.15);
+        }
         .header-info { flex: 1; }
-        .header-saludo { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; }
-        .header-name { font-size: 22px; font-weight: 900; color: white; }
+        .header-saludo { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 0.5px; text-transform: uppercase; }
+        .header-name { font-size: 22px; font-weight: 900; color: white; line-height: 1.1; }
+
         .header-actions { display: flex; gap: 8px; }
-        .btn-icon-header { background: rgba(255,255,255,0.12); border: none; border-radius: 12px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+        .btn-icon-header {
+            background: rgba(255,255,255,0.12);
+            border: none; border-radius: 12px;
+            width: 42px; height: 42px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-icon-header:active { background: rgba(255,255,255,0.25); }
 
-        /* ESTILOS NUEVOS PARA EL CALENDARIO (Agregados sin romper lo anterior) */
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-top: 10px; }
-        .cal-day-name { font-size: 10px; font-weight: 800; color: var(--muted); }
-        .cal-day { padding: 10px 0; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; position: relative; border: 1px solid transparent; }
-        .cal-day.has-note::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
-        .cal-day.selected { background: var(--primary); color: white; }
+        /* ── STATS BAR ── */
+        .stats {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            background: var(--primary);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding: 0 8px 16px;
+            gap: 6px;
+        }
+        .stat {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px; padding: 10px 6px;
+            text-align: center;
+        }
+        .stat-n { font-size: 22px; font-weight: 900; color: white; line-height: 1; }
+        .stat-l { font-size: 9px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; }
+        .stat-n.red { color: var(--accent); }
+        .stat-n.orange { color: #FFA502; }
 
-        /* RESTO DE TUS ESTILOS (STATS, FILTROS, NOTAS, MODALES, ETC) */
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--primary); border-top: 1px solid rgba(255,255,255,0.08); padding: 0 8px 16px; gap: 6px; }
-        .stat { background: rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 6px; text-align: center; }
-        .stat-n { font-size: 22px; font-weight: 900; color: white; }
-        .stat-l { font-size: 9px; color: rgba(255,255,255,0.45); text-transform: uppercase; }
-        
-        .filtros-wrap { background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 20; }
-        .filtros-row { display: flex; gap: 6px; overflow-x: auto; padding: 10px 14px; scrollbar-width: none; }
-        .chip { flex-shrink: 0; padding: 7px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: #F8F8F8; font-weight: 700; font-size: 12px; cursor: pointer; }
-        .chip.active { background: var(--primary); color: white; }
-        
-        .autor-row { display: flex; gap: 6px; padding: 0 14px 10px; overflow-x: auto; }
-        .chip-autor { flex-shrink: 0; padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--border); background: #F8F8F8; font-weight: 800; font-size: 11px; }
-        .chip-autor.active { color: white; background: var(--primary); }
+        /* ── FILTROS ── */
+        .filtros-wrap {
+            background: var(--card); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 20;
+        }
+        .filtros-row { display: flex; gap: 6px; overflow-x: auto; padding: 10px 14px;
+            scrollbar-width: none; }
+        .filtros-row::-webkit-scrollbar { display: none; }
 
+        .chip {
+            flex-shrink: 0; padding: 7px 14px;
+            border-radius: 20px; border: 1.5px solid var(--border);
+            background: #F8F8F8; font-weight: 700; font-size: 12px;
+            cursor: pointer; transition: all 0.18s; white-space: nowrap;
+        }
+        .chip.active {
+            background: var(--primary); color: white;
+            border-color: var(--primary);
+        }
+
+        /* autor chips */
+        .autor-row { display: flex; gap: 6px; padding: 0 14px 10px;
+            overflow-x: auto; scrollbar-width: none; }
+        .autor-row::-webkit-scrollbar { display: none; }
+        .chip-autor {
+            flex-shrink: 0; padding: 5px 12px;
+            border-radius: 20px; border: 1.5px solid var(--border);
+            background: #F8F8F8; font-weight: 800; font-size: 11px;
+            cursor: pointer; transition: all 0.18s;
+        }
+        .chip-autor.active { color: white; border-color: transparent; }
+        #chip-autor-mati.active  { background: var(--u-mati); }
+        #chip-autor-lis.active   { background: var(--u-lis); }
+        #chip-autor-agus.active  { background: var(--u-agus); }
+        #chip-autor-mia.active   { background: var(--u-mia); }
+
+        /* ── TABLERO ── */
         .tablero { padding: 14px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 110px; }
-        .nota { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border-left: 5px solid #ccc; position: relative; }
-        .nota-inner { padding: 14px; }
-        .nota-user { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 10px; color: white; display: inline-block; }
-        .nota-contenido { font-size: 16px; font-weight: 700; margin: 10px 0; }
-        .fecha-badge { font-size: 11px; font-weight: 800; padding: 4px 9px; border-radius: 20px; background: #eee; }
-        .nota-foot { display: flex; gap: 8px; border-top: 1px solid #F0F0F0; padding-top: 10px; }
-        .btn-completar { flex: 1; background: #F0FFF4; border: 1.5px solid #2ED573; color: #2ED573; padding: 9px; border-radius: 10px; font-weight: 800; }
-        .btn-borrar-nota { background: #FFF0F0; border: 1.5px solid #FFCDD2; color: var(--accent); padding: 9px 14px; border-radius: 10px; }
 
-        .fab { position: fixed; bottom: 24px; right: 18px; width: 62px; height: 62px; border-radius: 50%; background: var(--accent); color: white; border: none; font-size: 32px; box-shadow: 0 6px 24px rgba(255,71,87,0.4); z-index: 30; }
+        /* ── NOTA CARD ── */
+        .nota {
+            background: var(--card); border-radius: var(--radius);
+            box-shadow: var(--shadow); overflow: hidden;
+            position: relative; transition: transform 0.15s, opacity 0.3s;
+            border-left: 5px solid #ccc;
+        }
+        .nota.saliendo { transform: translateX(100%); opacity: 0; }
+        .nota.entrando { animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
 
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 100; align-items: flex-end; backdrop-filter: blur(2px); }
+        /* colores por categoría */
+        .nota[data-cat="super"]     { border-left-color: var(--cat-super); }
+        .nota[data-cat="casa"]      { border-left-color: var(--cat-casa); }
+        .nota[data-cat="comida"]    { border-left-color: var(--cat-comida); }
+        .nota[data-cat="colegio"]   { border-left-color: var(--cat-colegio); }
+        .nota[data-cat="medico"]    { border-left-color: var(--cat-medico); }
+        .nota[data-cat="pagos"]     { border-left-color: var(--cat-pagos); }
+        .nota[data-cat="mascota"]   { border-left-color: var(--cat-mascota); }
+        .nota[data-cat="trabajo"]   { border-left-color: var(--cat-trabajo); }
+        .nota[data-cat="eventos"]   { border-left-color: var(--cat-eventos); }
+        .nota[data-cat="urgente"]   { border-left-color: var(--cat-urgente); }
+        .nota[data-cat="panoramas"] { border-left-color: var(--cat-panoramas); }
+
+        .nota-inner { padding: 14px 14px 12px; }
+        .nota-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+        .nota-icono { font-size: 24px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+        .nota-meta { flex: 1; }
+        .nota-cat-label {
+            font-size: 9px; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 0.5px; color: var(--muted); margin-bottom: 2px;
+        }
+        .nota-user {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 11px; font-weight: 800;
+            padding: 2px 8px; border-radius: 10px;
+            color: white;
+        }
+        .nota-user.u-mati  { background: var(--u-mati); }
+        .nota-user.u-lis   { background: var(--u-lis); }
+        .nota-user.u-agus  { background: var(--u-agus); }
+        .nota-user.u-mia   { background: var(--u-mia); }
+
+        .nota-contenido { font-size: 16px; font-weight: 700; line-height: 1.4; margin-bottom: 10px; }
+
+        /* fecha badge */
+        .fecha-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 11px; font-weight: 800; padding: 4px 9px;
+            border-radius: 20px; margin-bottom: 10px;
+        }
+        .fecha-badge.ok      { background: #E8FDF0; color: #2ED573; }
+        .fecha-badge.pronto  { background: #FFF3E0; color: #FFA502; }
+        .fecha-badge.vencida { background: #FFEBEB; color: var(--accent); animation: pulso 1.4s infinite; }
+        .fecha-badge.hoy     { background: #E0F4FF; color: #1E90FF; }
+        @keyframes pulso { 0%,100%{ opacity:1 } 50%{ opacity:0.5 } }
+
+        /* nota footer */
+        .nota-foot {
+            display: flex; gap: 8px; align-items: center;
+            border-top: 1px solid #F0F0F0; padding-top: 10px;
+        }
+        .btn-completar {
+            flex: 1; background: #F0FFF4; border: 1.5px solid #2ED573;
+            border-radius: 10px; padding: 9px 12px;
+            font-weight: 800; font-size: 13px; color: #2ED573; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-completar:active { background: #2ED573; color: white; }
+        .btn-borrar-nota {
+            background: #FFF0F0; border: 1.5px solid #FFCDD2;
+            border-radius: 10px; padding: 9px 14px;
+            font-weight: 800; font-size: 13px; color: var(--accent); cursor: pointer;
+        }
+
+        /* ── URGENTE badge ── */
+        .nota[data-cat="urgente"] .nota-inner::before {
+            content: '🚨 URGENTE';
+            display: block;
+            background: var(--cat-urgente);
+            color: white;
+            font-size: 10px; font-weight: 900; letter-spacing: 0.5px;
+            padding: 4px 10px; margin: -14px -14px 10px;
+        }
+
+        /* ── EMPTY STATE ── */
+        .empty {
+            text-align: center; padding: 60px 20px;
+            color: var(--muted);
+        }
+        .empty-icon { font-size: 50px; margin-bottom: 10px; }
+        .empty-title { font-size: 18px; font-weight: 800; color: var(--text); }
+        .empty-sub { font-size: 14px; margin-top: 4px; }
+
+        /* ── FAB ── */
+        .fab {
+            position: fixed; bottom: 24px; right: 18px;
+            width: 62px; height: 62px; border-radius: 50%;
+            background: var(--accent); color: white;
+            border: none; font-size: 32px; line-height: 62px; text-align: center;
+            box-shadow: 0 6px 24px rgba(255,71,87,0.4);
+            cursor: pointer; z-index: 30;
+            transition: transform 0.15s;
+        }
+        .fab:active { transform: scale(0.92); }
+
+        /* ── MODALS ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 100;
+            align-items: flex-end; backdrop-filter: blur(2px);
+        }
         .modal-overlay.open { display: flex; }
-        .modal-sheet { background: var(--card); width: 100%; border-radius: 22px 22px 0 0; padding: 20px; max-height: 92vh; overflow-y: auto; }
-        
-        /* TUS ESTILOS DE SELECTOR DE CATEGORÍA Y PRIORIDAD */
-        .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .cat-opt { padding: 10px; border-radius: 12px; border: 2px solid var(--border); text-align: center; }
-        .cat-opt.selected { border-color: var(--primary); background: var(--primary); color: white; }
-        .prior-row { display: flex; gap: 8px; }
-        .prior-opt { flex: 1; padding: 10px; border-radius: 12px; border: 2px solid var(--border); text-align: center; font-weight: 800; }
-        .prior-opt.selected { background: var(--primary); color: white; }
+        .modal-sheet {
+            background: var(--card); width: 100%;
+            border-radius: 22px 22px 0 0;
+            padding: 20px 18px 36px;
+            max-height: 92vh; overflow-y: auto;
+            animation: slideUp 0.28s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        textarea, input[type="date"] { width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); margin: 8px 0; font-family: inherit; font-weight: 700; }
-        .btn-main { width: 100%; padding: 16px; border-radius: 14px; background: var(--primary); color: white; font-weight: 900; border: none; margin-top: 10px; }
-        
-        /* MODO SÚPER CHECKBOXES */
-        .super-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #eee; }
-        .super-checkbox { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border); }
-        .super-item.tachado { opacity: 0.5; text-decoration: line-through; }
+        .modal-handle {
+            width: 40px; height: 4px; background: #E0E0E0;
+            border-radius: 2px; margin: -8px auto 18px;
+        }
+        .modal-title { font-size: 20px; font-weight: 900; margin-bottom: 16px; }
+
+        /* form elements */
+        .field-label { font-size: 11px; font-weight: 800; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; margin-top: 14px; }
+        .field-label:first-child { margin-top: 0; }
+
+        select, input[type="text"], input[type="date"], textarea {
+            width: 100%; padding: 13px 14px;
+            border-radius: 12px; border: 1.5px solid var(--border);
+            font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700;
+            background: #F9F9F9; color: var(--text);
+            appearance: none; -webkit-appearance: none;
+            transition: border-color 0.2s;
+        }
+        select:focus, input:focus, textarea:focus {
+            outline: none; border-color: var(--primary); background: white;
+        }
+        textarea { resize: none; min-height: 80px; }
+
+        /* cat grid selector */
+        .cat-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+        }
+        .cat-opt {
+            padding: 10px 6px; border-radius: 12px;
+            border: 2px solid var(--border); background: #F9F9F9;
+            text-align: center; cursor: pointer; transition: all 0.18s;
+        }
+        .cat-opt .cat-ico { font-size: 22px; margin-bottom: 4px; }
+        .cat-opt .cat-nm  { font-size: 10px; font-weight: 800; color: var(--muted); }
+        .cat-opt.selected { border-color: var(--primary); background: var(--primary); }
+        .cat-opt.selected .cat-nm { color: white; }
+
+        /* prioridad */
+        .prior-row { display: flex; gap: 8px; }
+        .prior-opt {
+            flex: 1; padding: 10px 6px; border-radius: 12px;
+            border: 2px solid var(--border); background: #F9F9F9;
+            text-align: center; cursor: pointer; font-weight: 800; font-size: 13px;
+            transition: all 0.18s;
+        }
+        .prior-opt.sel-alta   { border-color: var(--accent); background: var(--accent); color: white; }
+        .prior-opt.sel-normal { border-color: #FFA502; background: #FFA502; color: white; }
+        .prior-opt.sel-baja   { border-color: #2ED573; background: #2ED573; color: white; }
+
+        /* btn main */
+        .btn-main {
+            background: var(--primary); color: white;
+            border: none; width: 100%; padding: 16px;
+            border-radius: 14px; font-weight: 900; font-size: 16px;
+            margin-top: 16px; cursor: pointer; letter-spacing: 0.3px;
+            transition: opacity 0.2s;
+        }
+        .btn-main:active { opacity: 0.8; }
+        .btn-cancel {
+            width: 100%; border: none; background: none;
+            margin-top: 12px; color: var(--muted); font-weight: 700;
+            font-size: 15px; padding: 10px; cursor: pointer;
+        }
+
+        /* ── MODAL EXPORT / SUPER ── */
+        .export-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+        .tab-btn {
+            flex: 1; padding: 11px; border-radius: 12px;
+            border: 1.5px solid var(--border); font-weight: 800; font-size: 13px;
+            background: #F9F9F9; cursor: pointer; transition: all 0.18s;
+        }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* lista super con checkboxes */
+        .super-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 13px 0; border-bottom: 1px solid #F0F0F0; cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .super-item.tachado { opacity: 0.4; }
+        .super-checkbox {
+            width: 28px; height: 28px; border-radius: 50%;
+            border: 2.5px solid var(--border); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; transition: all 0.18s;
+        }
+        .super-item.tachado .super-checkbox {
+            background: var(--cat-super); border-color: var(--cat-super); color: white;
+        }
+        .super-txt { flex: 1; font-size: 16px; font-weight: 700; }
+        .super-item.tachado .super-txt { text-decoration: line-through; color: var(--muted); }
+        .super-autor { font-size: 11px; color: var(--muted); font-weight: 700; }
+
+        /* export text list */
+        .export-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 11px 0; border-bottom: 1px solid #F0F0F0;
+        }
+        .export-item-txt { flex: 1; font-size: 14px; font-weight: 700; }
+        .export-autor { font-size: 11px; color: var(--muted); font-weight: 700; }
+
+        .btn-wa {
+            background: #25D366; color: white; border: none; width: 100%;
+            padding: 16px; border-radius: 14px; font-weight: 900;
+            font-size: 16px; margin-top: 14px; cursor: pointer;
+        }
+
+        /* ── CONFIRM MODAL ── */
+        .confirm-sheet {
+            text-align: center; padding-top: 10px;
+        }
+        .confirm-icon { font-size: 50px; margin-bottom: 8px; }
+        .confirm-title { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+        .confirm-sub { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+        .confirm-btns { display: flex; gap: 10px; }
+        .btn-confirm-yes {
+            flex: 1; padding: 14px; border-radius: 14px; border: none;
+            background: var(--accent); color: white; font-weight: 900; font-size: 15px; cursor: pointer;
+        }
+        .btn-confirm-no {
+            flex: 1; padding: 14px; border-radius: 14px;
+            border: 1.5px solid var(--border); background: white;
+            font-weight: 800; font-size: 15px; cursor: pointer;
+        }
+
+        /* ── PRIORIDAD border ── */
+        .nota.p-alta   { border-left-width: 6px; box-shadow: 0 4px 20px rgba(255,45,85,0.12); }
+        .nota.p-normal { }
+        .nota.p-baja   { opacity: 0.9; }
     </style>
 </head>
 <body>
@@ -97,5 +405,490 @@
 </div>
 
 <div id="app">
+    <!-- HEADER -->
     <div class="header">
-        <div class="avatar" id="
+        <div class="avatar" id="avatar">?</div>
+        <div class="header-info">
+            <div class="header-saludo">Hola 👋</div>
+            <div class="header-name" id="header-name">Cargando...</div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-icon-header" onclick="abrirExport()" title="Lista">📤</button>
+            <button class="btn-icon-header" onclick="abrirSuper()" title="Modo Súper">🛒</button>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-n" id="s-total">0</div>
+            <div class="stat-l">Total</div>
+        </div>
+        <div class="stat">
+            <div class="stat-n red" id="s-urgentes">0</div>
+            <div class="stat-l">Urgentes</div>
+        </div>
+        <div class="stat">
+            <div class="stat-n orange" id="s-vencidas">0</div>
+            <div class="stat-l">Vencidas</div>
+        </div>
+        <div class="stat">
+            <div class="stat-n" id="s-hoy">0</div>
+            <div class="stat-l">Hoy</div>
+        </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="filtros-wrap">
+        <div class="filtros-row" id="chips-cat">
+            <button class="chip active" onclick="filtrar('todas', this)">Todas</button>
+            <button class="chip" onclick="filtrar('super', this)">🛒 Súper</button>
+            <button class="chip" onclick="filtrar('urgente', this)">🚨 Urgente</button>
+            <button class="chip" onclick="filtrar('colegio', this)">🎓 Colegio</button>
+            <button class="chip" onclick="filtrar('medico', this)">🏥 Médico</button>
+            <button class="chip" onclick="filtrar('pagos', this)">💰 Pagos</button>
+            <button class="chip" onclick="filtrar('casa', this)">🏠 Casa</button>
+            <button class="chip" onclick="filtrar('comida', this)">🍎 Comida</button>
+            <button class="chip" onclick="filtrar('mascota', this)">🐾 Mascota</button>
+            <button class="chip" onclick="filtrar('trabajo', this)">💼 Trabajo</button>
+            <button class="chip" onclick="filtrar('eventos', this)">🎉 Eventos</button>
+            <button class="chip" onclick="filtrar('panoramas', this)">🎬 Panoramas</button>
+        </div>
+        <div class="autor-row" id="chips-autor">
+            <button class="chip-autor" id="chip-autor-todas" onclick="filtrarAutor('todas', this)" style="border-color:var(--primary); background:var(--primary); color:white;">Todos</button>
+            <button class="chip-autor" id="chip-autor-mati"  onclick="filtrarAutor('mati',  this)">👨🏻‍💻 Mati</button>
+            <button class="chip-autor" id="chip-autor-lis"   onclick="filtrarAutor('lis',   this)">👩🏻‍🍳 Lis</button>
+            <button class="chip-autor" id="chip-autor-agus"  onclick="filtrarAutor('agus',  this)">👧🏻 Agus</button>
+            <button class="chip-autor" id="chip-autor-mia"   onclick="filtrarAutor('mia',   this)">👩🏻‍🎓 Mia</button>
+        </div>
+    </div>
+
+    <!-- TABLERO -->
+    <div id="tablero" class="tablero"></div>
+
+    <!-- FAB -->
+    <button class="fab" onclick="abrirModal('modal-nota')">＋</button>
+</div>
+
+<!-- ─── MODAL: NUEVA NOTA ─── -->
+<div class="modal-overlay" id="modal-nota">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title">Nueva Nota</div>
+
+        <div class="field-label">Categoría</div>
+        <div class="cat-grid" id="cat-grid">
+            <div class="cat-opt" data-cat="super"     data-ico="🛒" onclick="selCat(this)"><div class="cat-ico">🛒</div><div class="cat-nm">Súper</div></div>
+            <div class="cat-opt" data-cat="urgente"   data-ico="🚨" onclick="selCat(this)"><div class="cat-ico">🚨</div><div class="cat-nm">Urgente</div></div>
+            <div class="cat-opt" data-cat="colegio"   data-ico="🎓" onclick="selCat(this)"><div class="cat-ico">🎓</div><div class="cat-nm">Colegio</div></div>
+            <div class="cat-opt" data-cat="medico"    data-ico="🏥" onclick="selCat(this)"><div class="cat-ico">🏥</div><div class="cat-nm">Médico</div></div>
+            <div class="cat-opt" data-cat="pagos"     data-ico="💰" onclick="selCat(this)"><div class="cat-ico">💰</div><div class="cat-nm">Pagos</div></div>
+            <div class="cat-opt" data-cat="casa"      data-ico="🏠" onclick="selCat(this)"><div class="cat-ico">🏠</div><div class="cat-nm">Casa</div></div>
+            <div class="cat-opt" data-cat="comida"    data-ico="🍎" onclick="selCat(this)"><div class="cat-ico">🍎</div><div class="cat-nm">Comida</div></div>
+            <div class="cat-opt" data-cat="mascota"   data-ico="🐾" onclick="selCat(this)"><div class="cat-ico">🐾</div><div class="cat-nm">Mascota</div></div>
+            <div class="cat-opt" data-cat="trabajo"   data-ico="💼" onclick="selCat(this)"><div class="cat-ico">💼</div><div class="cat-nm">Trabajo</div></div>
+            <div class="cat-opt" data-cat="eventos"   data-ico="🎉" onclick="selCat(this)"><div class="cat-ico">🎉</div><div class="cat-nm">Eventos</div></div>
+            <div class="cat-opt" data-cat="panoramas" data-ico="🎬" onclick="selCat(this)"><div class="cat-ico">🎬</div><div class="cat-nm">Panoramas</div></div>
+        </div>
+
+        <div class="field-label">¿Qué hay que hacer?</div>
+        <textarea id="f-txt" placeholder="Escribí acá..."></textarea>
+
+        <div class="field-label">Prioridad</div>
+        <div class="prior-row">
+            <div class="prior-opt" id="p-alta"   onclick="selPrior('alta')">🔴 Alta</div>
+            <div class="prior-opt sel-normal" id="p-normal" onclick="selPrior('normal')">🟡 Normal</div>
+            <div class="prior-opt" id="p-baja"   onclick="selPrior('baja')">🟢 Baja</div>
+        </div>
+
+        <div class="field-label">Fecha límite (opcional)</div>
+        <input type="date" id="f-fecha">
+
+        <button class="btn-main" onclick="guardar()">🚀 Publicar nota</button>
+        <button class="btn-cancel" onclick="cerrarModal('modal-nota')">Cancelar</button>
+    </div>
+</div>
+
+<!-- ─── MODAL: EXPORTAR ─── -->
+<div class="modal-overlay" id="modal-export">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title">📤 Exportar</div>
+        <div class="export-tabs">
+            <button class="tab-btn active" id="btn-t-compras" onclick="setExportTab('compras')">🛒 Solo Súper</button>
+            <button class="tab-btn" id="btn-t-todo"    onclick="setExportTab('todo')">📋 Todo</button>
+        </div>
+        <div id="export-lista"></div>
+        <button class="btn-wa" onclick="enviarWhatsApp()">💬 Enviar por WhatsApp</button>
+        <button class="btn-cancel" onclick="cerrarModal('modal-export')">Cerrar</button>
+    </div>
+</div>
+
+<!-- ─── MODAL: MODO SÚPER ─── -->
+<div class="modal-overlay" id="modal-super">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title">🛒 Lista del Súper</div>
+        <div style="font-size:12px; color:var(--muted); margin-bottom:14px; font-weight:700;">
+            Tocá cada ítem para tacharlo mientras comprás
+        </div>
+        <div id="super-lista"></div>
+        <div style="display:flex; gap:8px; margin-top:14px;">
+            <button class="btn-wa" style="flex:1" onclick="enviarSuperWA()">💬 Enviar por WhatsApp</button>
+        </div>
+        <button class="btn-cancel" onclick="cerrarModal('modal-super')">Cerrar</button>
+    </div>
+</div>
+
+<!-- ─── MODAL: CONFIRMAR ─── -->
+<div class="modal-overlay" id="modal-confirm">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="confirm-sheet">
+            <div class="confirm-icon" id="confirm-icon">✅</div>
+            <div class="confirm-title" id="confirm-title">¿Marcar como completada?</div>
+            <div class="confirm-sub" id="confirm-sub">Esta nota se eliminará del tablero</div>
+            <div class="confirm-btns">
+                <button class="btn-confirm-no" onclick="cerrarModal('modal-confirm')">Cancelar</button>
+                <button class="btn-confirm-yes" id="confirm-yes-btn">Sí, listo ✓</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp }     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, onValue, remove, update }
+                              from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+/* ── FIREBASE ── */
+const firebaseConfig = {
+    apiKey: "AIzaSyDG6icP-ZCbtMouvxb90OwI1cmse56fnjs",
+    authDomain: "app-family-notas.firebaseapp.com",
+    databaseURL: "https://app-family-notas-default-rtdb.firebaseio.com",
+    projectId: "app-family-notas",
+    storageBucket: "app-family-notas.firebasestorage.app",
+    messagingSenderId: "1043185917487",
+    appId: "1:1043185917487:web:5ec89f80b6f726e99270da"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+/* ── PERFILES ── */
+const perfiles = {
+    mati: { n: 'Mati', e: '👨🏻‍💻', bg: '#EBF2FC' },
+    lis:  { n: 'Lis',  e: '👩🏻‍🍳', bg: '#FCE8F3' },
+    agus: { n: 'Agus', e: '👧🏻',  bg: '#F0EBF9' },
+    mia:  { n: 'Mia',  e: '👩🏻‍🎓', bg: '#E8F9EE' }
+};
+
+const CAT_LABELS = {
+    super:'Súper', urgente:'Urgente', colegio:'Colegio', medico:'Médico',
+    pagos:'Pagos', casa:'Casa', comida:'Comida', mascota:'Mascota',
+    trabajo:'Trabajo', eventos:'Eventos', panoramas:'Panoramas'
+};
+
+/* ── AUTH ── */
+const userKey = (new URLSearchParams(window.location.search).get('u') || '').toLowerCase();
+if (perfiles[userKey]) {
+    document.getElementById("app").style.display = "block";
+    const p = perfiles[userKey];
+    document.getElementById("header-name").innerText = p.n;
+    const av = document.getElementById("avatar");
+    av.innerText = p.e; av.style.background = p.bg;
+} else {
+    document.getElementById("access-denied").style.display = "flex";
+}
+
+/* ── STATE ── */
+let notas      = [];
+let filtroCat  = 'todas';
+let filtroAut  = 'todas';
+let exportTab  = 'compras';
+let superChecks = {};
+let catSel     = null;
+let priorSel   = 'normal';
+
+/* ── REALTIME DB ── */
+onValue(ref(db, 'pendientes'), (s) => {
+    const d = s.val();
+    notas = d ? Object.keys(d).map(k => ({ id: k, ...d[k] }))
+                             .sort((a,b)=>{
+                                 // urgentes primero, luego por fecha (más cerca primero)
+                                 if(a.categoria==='urgente' && b.categoria!=='urgente') return -1;
+                                 if(b.categoria==='urgente' && a.categoria!=='urgente') return 1;
+                                 if(a.limite && b.limite) return a.limite.localeCompare(b.limite);
+                                 if(a.limite) return -1;
+                                 if(b.limite) return 1;
+                                 return (b.creado||'').localeCompare(a.creado||'');
+                             })
+              : [];
+    render();
+});
+
+/* ── FECHA UTILS ── */
+const hoy = () => new Date().toISOString().split('T')[0];
+
+function fechaStatus(limite) {
+    if (!limite) return null;
+    const hoyStr = hoy();
+    const diff = (new Date(limite) - new Date(hoyStr)) / 86400000;
+    if (diff < 0) return 'vencida';
+    if (diff === 0) return 'hoy';
+    if (diff <= 2) return 'pronto';
+    return 'ok';
+}
+
+function fechaLabel(limite, status) {
+    if (!limite) return '';
+    const [y, m, d] = limite.split('-');
+    const str = `${d}/${m}/${y}`;
+    const icons = { vencida:'⚠️', hoy:'📅', pronto:'⏰', ok:'📅' };
+    const texts = { vencida:`Vencida: ${str}`, hoy:'Hoy', pronto:`Próx: ${str}`, ok:str };
+    return `<span class="fecha-badge ${status}">${icons[status]} ${texts[status]}</span>`;
+}
+
+/* ── RENDER ── */
+function render() {
+    const filtradas = notas.filter(n => {
+        const catOk = filtroCat === 'todas' || n.categoria === filtroCat;
+        const autOk = filtroAut === 'todas' || n.autor === filtroAut;
+        return catOk && autOk;
+    });
+
+    // stats
+    document.getElementById('s-total').innerText    = notas.length;
+    document.getElementById('s-urgentes').innerText = notas.filter(n => n.categoria === 'urgente').length;
+    document.getElementById('s-hoy').innerText      = notas.filter(n => n.limite === hoy()).length;
+
+    const vencidas = notas.filter(n => n.limite && fechaStatus(n.limite) === 'vencida').length;
+    document.getElementById('s-vencidas').innerText = vencidas;
+
+    const tab = document.getElementById("tablero");
+    if (!filtradas.length) {
+        tab.innerHTML = `<div class="empty">
+            <div class="empty-icon">🎉</div>
+            <div class="empty-title">Todo al día</div>
+            <div class="empty-sub">No hay notas en esta categoría</div>
+        </div>`;
+        return;
+    }
+
+    tab.innerHTML = filtradas.map(n => {
+        const p    = perfiles[n.autor] || { n: n.autor, e:'👤' };
+        const cat  = n.categoria || 'nota';
+        const st   = fechaStatus(n.limite);
+        const fBadge = st ? fechaLabel(n.limite, st) : '';
+        const priorClass = n.prioridad ? `p-${n.prioridad}` : '';
+
+        return `
+        <div class="nota entrando ${priorClass}" data-cat="${cat}" id="nota-${n.id}">
+            <div class="nota-inner">
+                <div class="nota-top">
+                    <div class="nota-icono">${n.icono || '📌'}</div>
+                    <div class="nota-meta">
+                        <div class="nota-cat-label">${CAT_LABELS[cat] || cat}</div>
+                        <span class="nota-user u-${n.autor}">${p.e} ${p.n}</span>
+                    </div>
+                </div>
+                <div class="nota-contenido">${escHtml(n.contenido)}</div>
+                ${fBadge}
+                <div class="nota-foot">
+                    <button class="btn-completar" onclick="confirmar('${n.id}', 'completar')">✅ Completada</button>
+                    <button class="btn-borrar-nota" onclick="confirmar('${n.id}', 'borrar')">🗑️</button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function escHtml(s) {
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ── FILTROS ── */
+window.filtrar = (c, btn) => {
+    filtroCat = c;
+    document.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+};
+window.filtrarAutor = (a, btn) => {
+    filtroAut = a;
+    document.querySelectorAll('.chip-autor').forEach(b => {
+        b.classList.remove('active');
+        b.style.background = ''; b.style.borderColor = ''; b.style.color = '';
+    });
+    btn.classList.add('active');
+    if (a === 'todas') {
+        btn.style.background = 'var(--primary)';
+        btn.style.borderColor = 'var(--primary)';
+        btn.style.color = 'white';
+    }
+    render();
+};
+
+/* ── CATEGORÍA SELECTOR ── */
+window.selCat = (el) => {
+    document.querySelectorAll('.cat-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    catSel = el.dataset.cat;
+};
+
+/* ── PRIORIDAD SELECTOR ── */
+window.selPrior = (p) => {
+    priorSel = p;
+    document.querySelectorAll('.prior-opt').forEach(o => {
+        o.classList.remove('sel-alta','sel-normal','sel-baja');
+    });
+    document.getElementById('p-'+p).classList.add('sel-'+p);
+};
+
+/* ── GUARDAR ── */
+window.guardar = () => {
+    const txt = document.getElementById("f-txt").value.trim();
+    if (!txt)    { pulsar('f-txt'); return; }
+    if (!catSel) { alert('Elegí una categoría'); return; }
+
+    const catEl = document.querySelector(`.cat-opt[data-cat="${catSel}"]`);
+    const ico   = catEl ? catEl.dataset.ico : '📌';
+
+    push(ref(db, 'pendientes'), {
+        autor:    userKey,
+        contenido: txt,
+        icono:    ico,
+        categoria: catSel,
+        prioridad: priorSel,
+        creado:   new Date().toISOString(),
+        limite:   document.getElementById("f-fecha").value || null
+    });
+
+    cerrarModal('modal-nota');
+    document.getElementById("f-txt").value = "";
+    document.getElementById("f-fecha").value = "";
+    catSel = null;
+    priorSel = 'normal';
+    document.querySelectorAll('.cat-opt').forEach(o => o.classList.remove('selected'));
+    selPrior('normal');
+};
+
+function pulsar(id) {
+    const el = document.getElementById(id);
+    el.style.borderColor = 'var(--accent)';
+    setTimeout(() => el.style.borderColor = '', 1500);
+}
+
+/* ── CONFIRMAR / BORRAR ── */
+window.confirmar = (id, tipo) => {
+    const modal = document.getElementById('modal-confirm');
+    const nota  = notas.find(n => n.id === id);
+    if (!nota) return;
+
+    if (tipo === 'completar') {
+        document.getElementById('confirm-icon').innerText = '✅';
+        document.getElementById('confirm-title').innerText = '¿Completada?';
+        document.getElementById('confirm-sub').innerText = `"${nota.contenido.substring(0,40)}${nota.contenido.length>40?'...':''}"`;
+        document.getElementById('confirm-yes-btn').style.background = '#2ED573';
+    } else {
+        document.getElementById('confirm-icon').innerText = '🗑️';
+        document.getElementById('confirm-title').innerText = '¿Eliminar nota?';
+        document.getElementById('confirm-sub').innerText = 'Esta acción no se puede deshacer';
+        document.getElementById('confirm-yes-btn').style.background = 'var(--accent)';
+    }
+
+    document.getElementById('confirm-yes-btn').onclick = () => {
+        borrar(id);
+        cerrarModal('modal-confirm');
+    };
+    abrirModal('modal-confirm');
+};
+
+window.borrar = (id) => {
+    const el = document.getElementById('nota-'+id);
+    if (el) { el.classList.add('saliendo'); setTimeout(() => remove(ref(db, 'pendientes/'+id)), 280); }
+    else remove(ref(db, 'pendientes/'+id));
+};
+
+/* ── EXPORT ── */
+window.abrirExport = () => { abrirModal('modal-export'); renderExport(); };
+window.setExportTab = (t) => {
+    exportTab = t;
+    document.getElementById('btn-t-compras').classList.toggle('active', t === 'compras');
+    document.getElementById('btn-t-todo').classList.toggle('active', t === 'todo');
+    renderExport();
+};
+function renderExport() {
+    const items = exportTab === 'compras' ? notas.filter(n => n.categoria === 'super') : notas;
+    const el = document.getElementById('export-lista');
+    el.innerHTML = items.length
+        ? items.map(n => `
+            <div class="export-item">
+                <span style="font-size:20px">${n.icono||'📌'}</span>
+                <span class="export-item-txt">${escHtml(n.contenido)}</span>
+                <span class="export-autor">${perfiles[n.autor]?.n || n.autor}</span>
+            </div>`).join('')
+        : '<p style="text-align:center;color:var(--muted);padding:20px">No hay nada aquí</p>';
+}
+window.enviarWhatsApp = () => {
+    const items = exportTab === 'compras' ? notas.filter(n => n.categoria === 'super') : notas;
+    const titulo = exportTab === 'compras' ? '🛒 *LISTA DEL SÚPER*' : '📋 *TABLERO FAMILIAR*';
+    let msg = titulo + '\n' + '─'.repeat(20) + '\n';
+    items.forEach((n, i) => {
+        msg += `${i+1}. ${n.icono} ${n.contenido}`;
+        if (n.limite) msg += ` _(📅 ${n.limite})_`;
+        msg += ` — _${perfiles[n.autor]?.n || n.autor}_\n`;
+    });
+    msg += '\n_Enviado desde Tablero Familiar_ 🏠';
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
+/* ── MODO SÚPER ── */
+window.abrirSuper = () => {
+    superChecks = {};
+    renderSuper();
+    abrirModal('modal-super');
+};
+function renderSuper() {
+    const items = notas.filter(n => n.categoria === 'super');
+    const el = document.getElementById('super-lista');
+    if (!items.length) {
+        el.innerHTML = '<p style="text-align:center;color:var(--muted);padding:30px">No hay items en el súper 🛒</p>';
+        return;
+    }
+    el.innerHTML = items.map(n => `
+        <div class="super-item ${superChecks[n.id] ? 'tachado' : ''}" id="si-${n.id}" onclick="toggleSuper('${n.id}')">
+            <div class="super-checkbox">${superChecks[n.id] ? '✓' : ''}</div>
+            <div>
+                <div class="super-txt">${n.icono} ${escHtml(n.contenido)}</div>
+                <div class="super-autor">${perfiles[n.autor]?.n || n.autor}</div>
+            </div>
+        </div>`).join('');
+}
+window.toggleSuper = (id) => {
+    superChecks[id] = !superChecks[id];
+    renderSuper();
+};
+window.enviarSuperWA = () => {
+    const items = notas.filter(n => n.categoria === 'super');
+    let msg = '🛒 *LISTA DEL SÚPER*\n' + '─'.repeat(20) + '\n';
+    items.forEach(n => {
+        msg += `${superChecks[n.id] ? '✅' : '⬜'} ${n.contenido} — _${perfiles[n.autor]?.n || n.autor}_\n`;
+    });
+    msg += '\n_Enviado desde Tablero Familiar_ 🏠';
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
+/* ── MODALS ── */
+window.abrirModal  = (id) => document.getElementById(id).classList.add('open');
+window.cerrarModal = (id) => document.getElementById(id).classList.remove('open');
+
+// cerrar tocando overlay
+document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// fecha default = hoy
+document.getElementById('f-fecha').value = hoy();
+</script>
+</body>
+</html>
