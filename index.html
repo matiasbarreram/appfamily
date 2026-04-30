@@ -216,6 +216,11 @@
             border-radius: 10px; padding: 9px 14px;
             font-weight: 800; font-size: 13px; color: var(--accent); cursor: pointer;
         }
+        .btn-editar-nota {
+            background: #F0F4FF; border: 1.5px solid #C7D4FF;
+            border-radius: 10px; padding: 9px 14px;
+            font-weight: 800; font-size: 13px; color: #5352ED; cursor: pointer;
+        }
 
         /* ── URGENTE badge ── */
         .nota[data-cat="urgente"] .nota-inner::before {
@@ -341,22 +346,42 @@
         /* lista super con checkboxes */
         .super-item {
             display: flex; align-items: center; gap: 12px;
-            padding: 13px 0; border-bottom: 1px solid #F0F0F0; cursor: pointer;
-            transition: opacity 0.2s;
+            padding: 14px 0; border-bottom: 1px solid #F0F0F0;
+            transition: opacity 0.3s;
         }
-        .super-item.tachado { opacity: 0.4; }
+        .super-item.tachado { opacity: 0.38; }
         .super-checkbox {
-            width: 28px; height: 28px; border-radius: 50%;
+            width: 32px; height: 32px; border-radius: 50%;
             border: 2.5px solid var(--border); flex-shrink: 0;
             display: flex; align-items: center; justify-content: center;
-            font-size: 14px; transition: all 0.18s;
+            font-size: 15px; transition: all 0.2s; cursor: pointer;
+            background: white;
         }
         .super-item.tachado .super-checkbox {
             background: var(--cat-super); border-color: var(--cat-super); color: white;
         }
-        .super-txt { flex: 1; font-size: 16px; font-weight: 700; }
+        .super-txt-wrap { flex: 1; cursor: pointer; }
+        .super-txt { font-size: 16px; font-weight: 700; }
         .super-item.tachado .super-txt { text-decoration: line-through; color: var(--muted); }
-        .super-autor { font-size: 11px; color: var(--muted); font-weight: 700; }
+        .super-autor { font-size: 11px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+        .btn-super-borrar {
+            background: none; border: none; font-size: 20px;
+            padding: 6px; cursor: pointer; opacity: 0.35;
+            transition: opacity 0.2s; flex-shrink: 0;
+        }
+        .btn-super-borrar:active { opacity: 1; }
+        .super-progress {
+            background: #F0F0F0; border-radius: 10px; height: 6px;
+            margin-bottom: 14px; overflow: hidden;
+        }
+        .super-progress-bar {
+            background: var(--cat-super); height: 100%;
+            border-radius: 10px; transition: width 0.4s ease;
+        }
+        .super-counter {
+            font-size: 12px; font-weight: 800; color: var(--muted);
+            text-align: right; margin-bottom: 8px;
+        }
 
         /* export text list */
         .export-item {
@@ -394,6 +419,56 @@
         .nota.p-alta   { border-left-width: 6px; box-shadow: 0 4px 20px rgba(255,45,85,0.12); }
         .nota.p-normal { }
         .nota.p-baja   { opacity: 0.9; }
+
+        /* ── CALENDARIO ── */
+        .cal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .cal-nav {
+            background: #F0F0F0; border: none; border-radius: 10px;
+            width: 38px; height: 38px; font-size: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .cal-mes-label { font-size: 17px; font-weight: 900; }
+        .cal-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            gap: 3px; margin-bottom: 16px;
+        }
+        .cal-dia-label {
+            text-align: center; font-size: 10px; font-weight: 900;
+            color: var(--muted); padding: 4px 0; text-transform: uppercase;
+        }
+        .cal-dia {
+            aspect-ratio: 1; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; cursor: pointer;
+            position: relative; transition: background 0.15s;
+        }
+        .cal-dia:empty { cursor: default; }
+        .cal-dia.hoy { background: var(--primary); color: white; font-weight: 900; }
+        .cal-dia.tiene-notas::after {
+            content: ''; position: absolute; bottom: 3px;
+            width: 5px; height: 5px; border-radius: 50%;
+            background: var(--accent);
+        }
+        .cal-dia.hoy.tiene-notas::after { background: white; }
+        .cal-dia.seleccionado { background: var(--accent); color: white; }
+        .cal-dia:not(:empty):not(.hoy):not(.seleccionado):hover { background: #F0F0F0; }
+        .cal-eventos-titulo {
+            font-size: 13px; font-weight: 900; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.4px;
+            margin-bottom: 10px;
+        }
+        .cal-evento {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; background: #F9F9F9;
+            border-radius: 12px; margin-bottom: 8px;
+            border-left: 4px solid #ccc;
+        }
+        .cal-evento-txt { flex: 1; font-size: 14px; font-weight: 700; }
+        .cal-evento-autor { font-size: 11px; color: var(--muted); font-weight: 700; }
+        .cal-sin-eventos { text-align: center; color: var(--muted); padding: 20px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -415,6 +490,7 @@
         <div class="header-actions">
             <button class="btn-icon-header" onclick="abrirExport()" title="Lista">📤</button>
             <button class="btn-icon-header" onclick="abrirSuper()" title="Modo Súper">🛒</button>
+            <button class="btn-icon-header" onclick="abrirCalendario()" title="Calendario">📅</button>
         </div>
     </div>
 
@@ -528,15 +604,59 @@
 <div class="modal-overlay" id="modal-super">
     <div class="modal-sheet">
         <div class="modal-handle"></div>
-        <div class="modal-title">🛒 Lista del Súper</div>
-        <div style="font-size:12px; color:var(--muted); margin-bottom:14px; font-weight:700;">
-            Tocá cada ítem para tacharlo mientras comprás
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+            <div class="modal-title" style="margin-bottom:0">🛒 Lista del Súper</div>
+            <span id="super-badge" style="font-size:13px; font-weight:800; color:var(--muted)"></span>
+        </div>
+        <div class="super-progress"><div class="super-progress-bar" id="super-bar" style="width:0%"></div></div>
+        <div style="font-size:12px; color:var(--muted); margin-bottom:12px; font-weight:700;">
+            ✅ Tachá lo que ya compraste — 🗑️ para borrar de la lista
         </div>
         <div id="super-lista"></div>
-        <div style="display:flex; gap:8px; margin-top:14px;">
+        <div style="display:flex; gap:8px; margin-top:16px;">
             <button class="btn-wa" style="flex:1" onclick="enviarSuperWA()">💬 Enviar por WhatsApp</button>
         </div>
         <button class="btn-cancel" onclick="cerrarModal('modal-super')">Cerrar</button>
+    </div>
+</div>
+
+<!-- ─── MODAL: EDITAR NOTA ─── -->
+<div class="modal-overlay" id="modal-editar">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title">✏️ Editar Nota</div>
+
+        <div class="field-label">Categoría</div>
+        <div class="cat-grid" id="edit-cat-grid">
+            <div class="cat-opt" data-cat="super"     data-ico="🛒" onclick="selEditCat(this)"><div class="cat-ico">🛒</div><div class="cat-nm">Súper</div></div>
+            <div class="cat-opt" data-cat="urgente"   data-ico="🚨" onclick="selEditCat(this)"><div class="cat-ico">🚨</div><div class="cat-nm">Urgente</div></div>
+            <div class="cat-opt" data-cat="colegio"   data-ico="🎓" onclick="selEditCat(this)"><div class="cat-ico">🎓</div><div class="cat-nm">Colegio</div></div>
+            <div class="cat-opt" data-cat="medico"    data-ico="🏥" onclick="selEditCat(this)"><div class="cat-ico">🏥</div><div class="cat-nm">Médico</div></div>
+            <div class="cat-opt" data-cat="pagos"     data-ico="💰" onclick="selEditCat(this)"><div class="cat-ico">💰</div><div class="cat-nm">Pagos</div></div>
+            <div class="cat-opt" data-cat="casa"      data-ico="🏠" onclick="selEditCat(this)"><div class="cat-ico">🏠</div><div class="cat-nm">Casa</div></div>
+            <div class="cat-opt" data-cat="comida"    data-ico="🍎" onclick="selEditCat(this)"><div class="cat-ico">🍎</div><div class="cat-nm">Comida</div></div>
+            <div class="cat-opt" data-cat="mascota"   data-ico="🐾" onclick="selEditCat(this)"><div class="cat-ico">🐾</div><div class="cat-nm">Mascota</div></div>
+            <div class="cat-opt" data-cat="trabajo"   data-ico="💼" onclick="selEditCat(this)"><div class="cat-ico">💼</div><div class="cat-nm">Trabajo</div></div>
+            <div class="cat-opt" data-cat="eventos"   data-ico="🎉" onclick="selEditCat(this)"><div class="cat-ico">🎉</div><div class="cat-nm">Eventos</div></div>
+            <div class="cat-opt" data-cat="panoramas" data-ico="🎬" onclick="selEditCat(this)"><div class="cat-ico">🎬</div><div class="cat-nm">Panoramas</div></div>
+        </div>
+
+        <div class="field-label">Descripción</div>
+        <textarea id="edit-txt" placeholder="Escribí acá..."></textarea>
+
+        <div class="field-label">Prioridad</div>
+        <div class="prior-row">
+            <div class="prior-opt" id="ep-alta"   onclick="selEditPrior('alta')">🔴 Alta</div>
+            <div class="prior-opt" id="ep-normal" onclick="selEditPrior('normal')">🟡 Normal</div>
+            <div class="prior-opt" id="ep-baja"   onclick="selEditPrior('baja')">🟢 Baja</div>
+        </div>
+
+        <div class="field-label">Fecha límite</div>
+        <input type="date" id="edit-fecha">
+
+        <input type="hidden" id="edit-id">
+        <button class="btn-main" onclick="guardarEdicion()">💾 Guardar cambios</button>
+        <button class="btn-cancel" onclick="cerrarModal('modal-editar')">Cancelar</button>
     </div>
 </div>
 
@@ -695,6 +815,7 @@ function render() {
                 ${fBadge}
                 <div class="nota-foot">
                     <button class="btn-completar" onclick="confirmar('${n.id}', 'completar')">✅ Completada</button>
+                    <button class="btn-editar-nota" onclick="abrirEditar('${n.id}')">✏️</button>
                     <button class="btn-borrar-nota" onclick="confirmar('${n.id}', 'borrar')">🗑️</button>
                 </div>
             </div>
@@ -799,6 +920,7 @@ window.confirmar = (id, tipo) => {
     document.getElementById('confirm-yes-btn').onclick = () => {
         borrar(id);
         cerrarModal('modal-confirm');
+        document.getElementById('confirm-yes-btn').innerText = 'Sí, listo ✓';
     };
     abrirModal('modal-confirm');
 };
@@ -848,34 +970,141 @@ window.abrirSuper = () => {
     renderSuper();
     abrirModal('modal-super');
 };
+
 function renderSuper() {
     const items = notas.filter(n => n.categoria === 'super');
-    const el = document.getElementById('super-lista');
+    const el    = document.getElementById('super-lista');
+    const total = items.length;
+    const hechos = items.filter(n => superChecks[n.id]).length;
+
+    // progress bar
+    const pct = total ? Math.round((hechos / total) * 100) : 0;
+    document.getElementById('super-bar').style.width = pct + '%';
+    document.getElementById('super-badge').innerText = total
+        ? `${hechos}/${total} comprados`
+        : '';
+
     if (!items.length) {
-        el.innerHTML = '<p style="text-align:center;color:var(--muted);padding:30px">No hay items en el súper 🛒</p>';
+        el.innerHTML = '<p style="text-align:center;color:var(--muted);padding:30px 0">No hay items en el súper 🎉</p>';
         return;
     }
-    el.innerHTML = items.map(n => `
-        <div class="super-item ${superChecks[n.id] ? 'tachado' : ''}" id="si-${n.id}" onclick="toggleSuper('${n.id}')">
-            <div class="super-checkbox">${superChecks[n.id] ? '✓' : ''}</div>
-            <div>
+
+    // Ordenar: sin tachar primero
+    const sorted = [...items].sort((a, b) => {
+        const ac = superChecks[a.id] ? 1 : 0;
+        const bc = superChecks[b.id] ? 1 : 0;
+        return ac - bc;
+    });
+
+    el.innerHTML = sorted.map(n => `
+        <div class="super-item ${superChecks[n.id] ? 'tachado' : ''}" id="si-${n.id}">
+            <div class="super-checkbox" onclick="toggleSuper('${n.id}')">
+                ${superChecks[n.id] ? '✓' : ''}
+            </div>
+            <div class="super-txt-wrap" onclick="toggleSuper('${n.id}')">
                 <div class="super-txt">${n.icono} ${escHtml(n.contenido)}</div>
                 <div class="super-autor">${perfiles[n.autor]?.n || n.autor}</div>
             </div>
+            <button class="btn-super-borrar" onclick="superBorrar('${n.id}')" title="Eliminar de la lista">🗑️</button>
         </div>`).join('');
 }
+
 window.toggleSuper = (id) => {
     superChecks[id] = !superChecks[id];
     renderSuper();
 };
+
+window.superBorrar = (id) => {
+    const nota = notas.find(n => n.id === id);
+    if (!nota) return;
+
+    // Mini confirm inline
+    document.getElementById('confirm-icon').innerText  = '🛒';
+    document.getElementById('confirm-title').innerText = '¿Comprado y listo?';
+    document.getElementById('confirm-sub').innerText   = `"${nota.contenido.substring(0,40)}${nota.contenido.length>40?'...':''}" — se eliminará de las notas`;
+    document.getElementById('confirm-yes-btn').style.background = '#2ED573';
+    document.getElementById('confirm-yes-btn').innerText = '✓ Sí, comprado';
+    document.getElementById('confirm-yes-btn').onclick = () => {
+        remove(ref(db, 'pendientes/' + id));
+        delete superChecks[id];
+        cerrarModal('modal-confirm');
+        // renderSuper se actualiza sola por onValue
+    };
+    abrirModal('modal-confirm');
+};
+
 window.enviarSuperWA = () => {
     const items = notas.filter(n => n.categoria === 'super');
     let msg = '🛒 *LISTA DEL SÚPER*\n' + '─'.repeat(20) + '\n';
-    items.forEach(n => {
-        msg += `${superChecks[n.id] ? '✅' : '⬜'} ${n.contenido} — _${perfiles[n.autor]?.n || n.autor}_\n`;
-    });
+    const pendientes = items.filter(n => !superChecks[n.id]);
+    const comprados  = items.filter(n =>  superChecks[n.id]);
+    pendientes.forEach(n => { msg += `⬜ ${n.contenido} — _${perfiles[n.autor]?.n || n.autor}_\n`; });
+    if (comprados.length) {
+        msg += '\n✅ *Ya en el carrito:*\n';
+        comprados.forEach(n => { msg += `✅ ~${n.contenido}~\n`; });
+    }
     msg += '\n_Enviado desde Tablero Familiar_ 🏠';
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
+/* ── EDITAR NOTAS ── */
+let editCatSel  = null;
+let editPriorSel = 'normal';
+
+window.abrirEditar = (id) => {
+    const nota = notas.find(n => n.id === id);
+    if (!nota) return;
+
+    // Precargar valores
+    document.getElementById('edit-id').value    = id;
+    document.getElementById('edit-txt').value   = nota.contenido || '';
+    document.getElementById('edit-fecha').value = nota.limite || '';
+
+    // Categoría
+    editCatSel = nota.categoria;
+    document.querySelectorAll('#edit-cat-grid .cat-opt').forEach(o => {
+        o.classList.toggle('selected', o.dataset.cat === nota.categoria);
+    });
+
+    // Prioridad
+    editPriorSel = nota.prioridad || 'normal';
+    selEditPrior(editPriorSel);
+
+    abrirModal('modal-editar');
+};
+
+window.selEditCat = (el) => {
+    document.querySelectorAll('#edit-cat-grid .cat-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    editCatSel = el.dataset.cat;
+};
+
+window.selEditPrior = (p) => {
+    editPriorSel = p;
+    ['alta','normal','baja'].forEach(x => {
+        document.getElementById('ep-'+x).classList.remove('sel-alta','sel-normal','sel-baja');
+    });
+    document.getElementById('ep-'+p).classList.add('sel-'+p);
+};
+
+window.guardarEdicion = () => {
+    const id  = document.getElementById('edit-id').value;
+    const txt = document.getElementById('edit-txt').value.trim();
+    if (!txt)       { pulsar('edit-txt'); return; }
+    if (!editCatSel){ alert('Elegí una categoría'); return; }
+
+    const catEl = document.querySelector(`#edit-cat-grid .cat-opt[data-cat="${editCatSel}"]`);
+    const ico   = catEl ? catEl.dataset.ico : '📌';
+
+    update(ref(db, 'pendientes/' + id), {
+        contenido: txt,
+        categoria: editCatSel,
+        icono:     ico,
+        prioridad: editPriorSel,
+        limite:    document.getElementById('edit-fecha').value || null,
+        editado:   new Date().toISOString()
+    });
+    cerrarModal('modal-editar');
 };
 
 /* ── MODALS ── */
